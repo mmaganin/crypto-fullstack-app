@@ -10,17 +10,21 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
-      <Jumbotron />
-      <ResponsiveAppBar />
-      <Routes>
-        <Route exact path="/" element={<Welcome />}  />
-        <Route path="/account" element={<Account />}  />
-        <Route path="/markets" element={<CryptoPrices />}  />
-        <Route path="/portfolio" element={<Portfolio />}  />
-      </Routes>
+    <div>
+      <div style={{ minHeight: "880px" }}>
+        <Router>
+          <ResponsiveAppBar />
+          <Routes>
+            <Route exact path="/" element={<Welcome />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/markets" element={<CryptoPrices />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+          </Routes>
+        </Router>
+      </div>
       <Footer />
-    </Router>
+
+    </div>
   );
 }
 

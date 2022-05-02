@@ -1,7 +1,7 @@
 function Jumbotron() {
     return (
         <div >
-            <img class="img-responsive" src="tech-banner.jpg" alt="" />
+            <img class="img-responsive" src="images/jumbotron-banner.jpg" alt="" />
         </div>
     );
 }

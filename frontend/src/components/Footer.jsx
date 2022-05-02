@@ -1,33 +1,21 @@
-import { Box, Container, Grid, Item } from '@mui/material';
+import { Box, Container, Grid, Item, Typography } from '@mui/material';
 import React from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 
-function Footer() {
+const Footer = () => {
     return (
-        <footer >
-            <Box
-                color="white"
-                bgcolor="text.secondary"
-                px={{ xs: 3, sm: 3 }}
-                py={{ xs: 3, sm: 3 }}
-            >
-                <Container maxWidth="lg">
-                    <Grid container spacing={5}>
-                        <Grid item xs={4}>
-                            <p>xs=8</p>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <p>xs=4</p>
-                        </Grid>
-                    </Grid>
-
-                </Container>
-
-
+        <Box
+            color="black"
+            bgcolor="#343434"
+            px={{ xs: 1, sm: 1 }}
+            py={{ xs: 1, sm: 1 }}
+            sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}
+        >
+            <Box sx={{ my: 2, color: 'white', display: 'block' }}>
+                © 2020 Copyright: Michael Maganini
             </Box>
-
-
-        </footer >
+        </Box>
     );
 }
 

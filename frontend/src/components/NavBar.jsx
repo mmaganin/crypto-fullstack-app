@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-const pages = ['Cryptocurrency Prices', 'My Portfolio'];
-const settings = ['Account'];
+const pages = ['Cryptocurrency Markets', 'My Portfolio'];
 const linkStyle = {
   textDecoration: "none",
   color: 'black'
@@ -14,9 +13,6 @@ const linkStyle = {
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: {
-      main: '#1976d2',
-    },
   },
 });
 
@@ -53,7 +49,7 @@ const ResponsiveAppBar = () => {
             >
               <Tooltip title="Navigate to Homepage">
                 <Link to="/" >
-                  <img src="nav-bar-logo7.jpg" alt="" />
+                  <img src="images/nav-bar-logo.jpg" alt="" />
                 </Link>
               </Tooltip>
 
@@ -61,7 +57,7 @@ const ResponsiveAppBar = () => {
 
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {pages.map((page) => (
-                <Link to={page === "Cryptocurrency Prices" ? "/markets" : "/portfolio"} style={linkStyle}>
+                <Link to={page === "Cryptocurrency Markets" ? "/markets" : "/portfolio"} style={linkStyle}>
                   <Button
                     key={page}
                     onClick={handleCloseNavMenu}
