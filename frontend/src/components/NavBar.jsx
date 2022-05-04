@@ -10,6 +10,10 @@ const linkStyle = {
   textDecoration: "none",
   color: 'black'
 };
+const imgStyle = {
+  width: '100%',
+  height: 'auto',
+}
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -48,9 +52,11 @@ const ResponsiveAppBar = () => {
               sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
             >
               <Tooltip title="Navigate to Homepage">
-                <Link to="/" >
-                  <img src="images/nav-bar-logo.jpg" alt="" />
-                </Link>
+                <div style={{ width: '65px' }}>
+                  <Link to="/" >
+                    <img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />
+                  </Link>
+                </div>
               </Tooltip>
 
             </Typography>
