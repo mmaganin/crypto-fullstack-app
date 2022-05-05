@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, TextField } from '@mui/material'
 
 const sideBarStyle = {
@@ -20,41 +20,61 @@ const CryptoCard = (dataIdx) => {
 	});
 	const price = formatter.format(dataIdx.price)
 	const market_cap = formatter.format(dataIdx.market_cap)
+	var textFieldLabel = "";
+	var textFieldHelper = "";
 
 	const [buyClicked, setBuyClicked] = useState(false);
 	const [sellClicked, setSellClicked] = useState(false);
 	const [textFieldContent, setTextFieldContent] = useState("");
 
+
 	function clickBuyButton() {
+		if (textFieldContent !== "" && !isNaN(+textFieldContent)) {
+			submitBuyOrSell(true)
+		}
 		setSellClicked(false)
 		setBuyClicked(true)
-		if (textFieldContent !== "") {
-			submitBuyOrSell()
-		}
 	}
 	function clickSellButton() {
+		if (textFieldContent !== "" && !isNaN(+textFieldContent)) {
+			submitBuyOrSell(false)
+		}
 		setSellClicked(true)
 		setBuyClicked(false)
-		if (textFieldContent !== "") {
-			submitBuyOrSell()
-		}
+
 	}
 	function clickAway() {
 		if (textFieldContent === "") {
 			setSellClicked(false)
 			setBuyClicked(false)
 		}
+
 	}
 	function handleTextField(event) {
 		setTextFieldContent(event.target.value)
 	}
-	function submitBuyOrSell() {
-		window.alert("You have bought or sold crypto!")
+	function submitBuyOrSell(isBuy) {
+		if(isBuy){
+			window.alert("You have bought " + textFieldContent + " " + dataIdx.name + "!")
+		} else {
+			window.alert("You have sold " + textFieldContent + " " + dataIdx.name + "!")
+		}
 		setTextFieldContent("")
 		setSellClicked(false)
 		setBuyClicked(false)
 	}
 
+
+	if(buyClicked){
+		textFieldLabel = "Enter Quantity to Buy"
+		textFieldHelper = "Then Click Buy to Place Order"
+	} else if (sellClicked){
+		textFieldLabel = "Enter Quantity to Sell"
+		textFieldHelper = "Then Click Sell to Place Order"
+	}
+	if(isNaN(+textFieldContent)){
+		textFieldLabel = "Please Enter Numbers Only"
+	} 
 	return (
 		<Grid item>
 
@@ -77,25 +97,28 @@ const CryptoCard = (dataIdx) => {
 				</Stack>
 
 				<CardActions>
-					<div
-						onFocus={() => clickBuyButton()}
-					>
-						<Button size="small">Buy</Button>
-					</div>
-					<div
-						onFocus={() => clickSellButton()}
-					>
-						<Button size="small">Sell</Button>
-					</div>
+
+					<Button size="small" onClick={() => clickBuyButton(dataIdx.slug)}>Buy</Button>
+
+					<Button size="small" onClick={() => clickSellButton(dataIdx.slug)}>Sell</Button>
 					<div
 						onBlur={() => clickAway()}
 					>
-						{buyClicked || sellClicked ?
+						{buyClicked ?
 							<TextField
 								id="standard-helperText"
-								label="test"
-								defaultValue=""
-								helperText="helper"
+								label={textFieldLabel}
+								defaultValue={textFieldContent}
+								helperText={textFieldHelper}
+								variant="standard"
+								onChange={(event) => handleTextField(event)}
+							/> : ""}
+						{sellClicked ?
+							<TextField
+								id="standard-helperText"
+								label={textFieldLabel}
+								defaultValue={textFieldContent}
+								helperText={textFieldHelper}
 								variant="standard"
 								onChange={(event) => handleTextField(event)}
 							/> : ""}
@@ -106,5 +129,6 @@ const CryptoCard = (dataIdx) => {
 		</Grid >
 	)
 }
+
 
 export default CryptoCard;

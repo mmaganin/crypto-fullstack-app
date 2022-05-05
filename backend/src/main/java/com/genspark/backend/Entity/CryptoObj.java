@@ -16,6 +16,8 @@ public class CryptoObj {
     private String total_supply;
     private String cmc_rank;
     private String price;
+    private String percent_change_1h;
+    private String percent_change_24h;
     private String percent_change_7d;
     private String percent_change_30d;
     private String market_cap;
@@ -24,8 +26,9 @@ public class CryptoObj {
     public CryptoObj() {
     }
 
-    public CryptoObj(String name, String symbol, String slug, String circulating_supply, String total_supply, String cmc_rank,
-                     String price, String percent_change_7d, String percent_change_30d, String market_cap, String last_updated) {
+    public CryptoObj(String name, String symbol, String slug, String circulating_supply, String total_supply,
+                     String cmc_rank, String price, String percent_change_1h, String percent_change_24h,
+                     String percent_change_7d, String percent_change_30d, String market_cap, String last_updated) {
         this.name = name;
         this.symbol = symbol;
         this.slug = slug;
@@ -33,6 +36,8 @@ public class CryptoObj {
         this.total_supply = total_supply;
         this.cmc_rank = cmc_rank;
         this.price = price;
+        this.percent_change_1h = percent_change_1h;
+        this.percent_change_24h = percent_change_24h;
         this.percent_change_7d = percent_change_7d;
         this.percent_change_30d = percent_change_30d;
         this.market_cap = market_cap;
@@ -95,6 +100,22 @@ public class CryptoObj {
         this.price = price;
     }
 
+    public String getPercent_change_1h() {
+        return percent_change_1h;
+    }
+
+    public void setPercent_change_1h(String percent_change_1h) {
+        this.percent_change_1h = percent_change_1h;
+    }
+
+    public String getPercent_change_24h() {
+        return percent_change_24h;
+    }
+
+    public void setPercent_change_24h(String percent_change_24h) {
+        this.percent_change_24h = percent_change_24h;
+    }
+
     public String getPercent_change_7d() {
         return percent_change_7d;
     }
@@ -146,6 +167,8 @@ public class CryptoObj {
                     parseApiCall("total_supply", entry),
                     parseApiCall("cmc_rank", entry),
                     parseApiCall("price", entry),
+                    parseApiCall("percent_change_1h", entry),
+                    parseApiCall("percent_change_24h", entry),
                     parseApiCall("percent_change_7d", entry),
                     parseApiCall("percent_change_30d", entry),
                     parseApiCall("market_cap", entry),
@@ -180,6 +203,8 @@ public class CryptoObj {
                 ", total_supply='" + total_supply + '\'' +
                 ", cmc_rank='" + cmc_rank + '\'' +
                 ", price='" + price + '\'' +
+                ", percent_change_1h='" + percent_change_1h + '\'' +
+                ", percent_change_24h='" + percent_change_24h + '\'' +
                 ", percent_change_7d='" + percent_change_7d + '\'' +
                 ", percent_change_30d='" + percent_change_30d + '\'' +
                 ", market_cap='" + market_cap + '\'' +
