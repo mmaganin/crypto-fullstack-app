@@ -34,6 +34,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
     }
 
+    //permits all requests with /login path and authenticates based on params
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");

@@ -29,6 +29,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     private final AppRoleDao appRoleDao;
     private final PasswordEncoder passwordEncoder;
 
+    //overriden from userdetailsservice, custom security to load user from DB
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = appUserDao.findByUsername(username);

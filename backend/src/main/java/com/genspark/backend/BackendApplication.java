@@ -13,6 +13,7 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
+	//autowires bcryptpasswordencoder in security config
 	@Bean
 	PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();

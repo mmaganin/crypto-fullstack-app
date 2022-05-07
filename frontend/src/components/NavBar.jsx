@@ -6,10 +6,16 @@ import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const pages = ['Cryptocurrency Markets', 'My Portfolio'];
+
 const linkStyle = {
   textDecoration: "none",
   color: 'black'
 };
+const accountLinkStyle = {
+  textDecoration: "none",
+  color: 'white'
+};
+
 const imgStyle = {
   width: '100%',
   height: 'auto',
@@ -37,6 +43,12 @@ const ResponsiveAppBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    setAnchorElUser(null);
+    localStorage.removeItem('refresh');
+    window.location.reload();
   };
 
 
@@ -76,13 +88,57 @@ const ResponsiveAppBar = () => {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Navigate to Account page">
-                <Link to="/account" style={linkStyle}>
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <AccountCircle />
-                  </IconButton>
-                </Link>
+              <Tooltip title="Account Settings">
+                {/* <Link to="/account" style={linkStyle}> */}
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <AccountCircle />
+                </IconButton>
+                {/* </Link> */}
               </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {localStorage.getItem('refresh') === null ?
+                  <div>
+                    <Link to="/createaccount" style={accountLinkStyle}>
+                      <MenuItem key="Create Account" onClick={handleCloseUserMenu}>
+                        <Typography textAlign="center">Create Account</Typography>
+                      </MenuItem>
+                    </Link>
+
+                    <Link to="/login" style={accountLinkStyle}>
+                      <MenuItem key="Login" onClick={handleCloseUserMenu}>
+                        <Typography textAlign="center">Login</Typography>
+                      </MenuItem>
+                    </Link>
+                  </div>
+                  :
+                  <div><Link to="/account" style={accountLinkStyle}>
+                    <MenuItem key="Account Info" onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">Account Info</Typography>
+                    </MenuItem>
+                  </Link>
+
+                    <MenuItem key="Logout" onClick={handleLogout}>
+                      <Typography textAlign="center">Logout</Typography>
+                    </MenuItem></div>
+                }
+
+
+              </Menu>
 
             </Box>
           </Toolbar>

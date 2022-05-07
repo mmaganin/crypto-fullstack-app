@@ -14,6 +14,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -27,28 +32,53 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //how to look for users
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //sets location to receive auth requests with no blocks
+
+        http.cors().and();
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/login");
+
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 //        http.authorizeRequests().anyRequest().permitAll();
         //"/token/refresh/**"
+        http.authorizeRequests().antMatchers("/tokens/refresh").permitAll();
         http.authorizeRequests().antMatchers("/markets").permitAll();
+        http.authorizeRequests().antMatchers("/createaccount").permitAll();
         http.authorizeRequests().antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers("/account").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
 
-//        http.authorizeRequests().antMatchers("/login/**", "/token/refresh/**").permitAll();
+//        http.authorizeRequests().antMatchers("/token/refresh/**").permitAll();
 //        http.authorizeRequests().antMatchers(GET, "/account/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
+    //allows usage of auth manager bean in config
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+//        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
     }
 }

@@ -21,12 +21,7 @@ public class CryptoAPI {
     private static String apiKey = "";
 //    private static String apiKey = "b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c";  //test key
 //    private static String symbolsToRequest =
-//        "USDT,BTC,ETH,BNB,SOL," +
-//        "XRP,LUNA,ADA,DOGE,AVAX," +
-//                "DOT,SHIB,MATIC,NEAR,CRO," +
-//                "TRX,LTC,BCH,FTT,LEO," +
-//                "LINK,ATOM,UNI,APE,XLM," +
-//                "ALGO,XMR,ETC,VET,FIL";
+//        "ETC,VET,FIL";
 
         private static String slugsToRequest =
         "algorand,cardano,vechain,cosmos,avalanche," +
