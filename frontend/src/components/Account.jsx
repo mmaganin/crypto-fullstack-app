@@ -215,7 +215,7 @@ const Account = () => {
 		if(type === "password"){
 			displayField = "•••••"
 		}
-		
+
 		if (!displayForm) {
 			return (
 				<>
@@ -228,11 +228,11 @@ const Account = () => {
 				</>)
 		} else if (type === "bio") {
 			return (
-				<TextareaAutosize
-					aria-label="bio text field"
+				<TextField
+					multiline
 					minRows={3}
 					maxRows={10}
-					placeholder={label}
+					label={label}
 					defaultValue={field}
 					style={{ width: 400 }}
 					onChange={(event) => handleTextField(event, type)}

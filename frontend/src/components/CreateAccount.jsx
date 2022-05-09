@@ -1,7 +1,11 @@
-import { Box, TextField, Button } from '@mui/material';
+import { Box, TextField, Button, Stack, Card } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
+const sideBarStyle = {
+    minWidth: '100px',
+
+}
 
 const CreateAccount = () => {
 	const [username, setUsername] = useState("");
@@ -79,38 +83,51 @@ const CreateAccount = () => {
 	}
 
 	return (
-		<div>
-			<Box
-				component="form"
-				sx={{
-					'& .MuiTextField-root': { m: 1, width: '25ch' },
-				}}
-				noValidate
-				autoComplete="off"
-			>
-				<TextField
-					required
-					id="outlined-required"
-					label="Username"
-					defaultValue={username}
-					onChange={(e) => handleUsername(e)}
+		<Stack direction="row" justifyContent='center'  >
+			<Box sx={sideBarStyle} />
+			<Card sx={{ boxShadow: 10 }}>
+				<Stack direction="column"
+					width='400px'
+					margin='25px'
+					justifyContent='center'
+					alignItems="center"
+					alignContent="center"
+					spacing={2}>
+					<Box sx={{
+						fontSize: 32,
+						fontWeight: 'light'
+					}}>
+						Create Account
+					</Box>
 
-				/>
-				<TextField
-					required
-					id="outlined-password-input"
-					label="Password"
-					type="password"
-					defaultValue={password}
-					onChange={(e) => handlePassword(e)}
-				/>
+					<TextField
+						required
+						id="outlined-required"
+						fullWidth
+						label="Username"
+						defaultValue={username}
+						onChange={(e) => handleUsername(e)}
 
-				<Button variant="outlined" onClick={handleSubmit}>
-					Create Account
-				</Button>
+					/>
+					<TextField
+						required
+						id="outlined-password-input"
+						fullWidth
+						label="Password"
+						type="password"
+						defaultValue={password}
+						onChange={(e) => handlePassword(e)}
+					/>
 
-			</Box>
-		</div>
+					<Button variant="outlined" onClick={handleSubmit}>
+						Create Account
+					</Button>
+
+
+				</Stack>
+			</Card>
+			<Box sx={sideBarStyle} />
+		</Stack>
 	);
 }
 
