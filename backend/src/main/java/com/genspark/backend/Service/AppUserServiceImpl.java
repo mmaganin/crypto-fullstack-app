@@ -79,7 +79,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public AppUser getUser(String username) {
         log.info("Fetching user {}", username);
-
+        AppUser appUser = appUserDao.findByUsername(username);
         return appUserDao.findByUsername(username);
     }
 

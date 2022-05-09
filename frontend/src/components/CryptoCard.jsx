@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, TextField } from '@mui/material'
+import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, TextField, Divider } from '@mui/material'
+import { useNavigate } from "react-router-dom";
+import ClickAwayListener from '@mui/base/ClickAwayListener';
 
 const sideBarStyle = {
 	maxWidth: '500px',
@@ -13,7 +15,7 @@ const imgStyle = {
 }
 
 const CryptoCard = (dataIdx) => {
-	const imageSrc = "images/" + dataIdx.slug + ".png"
+	const imageSrc = "images/cryptocurrency/" + dataIdx.slug + ".png"
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
@@ -26,9 +28,17 @@ const CryptoCard = (dataIdx) => {
 	const [buyClicked, setBuyClicked] = useState(false);
 	const [sellClicked, setSellClicked] = useState(false);
 	const [textFieldContent, setTextFieldContent] = useState("");
+	const navigate = useNavigate()
 
 
+	function checkLoggedIn() {
+		const refresh_token = localStorage.getItem('refresh')
+		if (refresh_token === null) {
+			navigate("/login")
+		}
+	}
 	function clickBuyButton() {
+		checkLoggedIn()
 		if (textFieldContent !== "" && !isNaN(+textFieldContent)) {
 			submitBuyOrSell(true)
 		}
@@ -36,6 +46,7 @@ const CryptoCard = (dataIdx) => {
 		setBuyClicked(true)
 	}
 	function clickSellButton() {
+		checkLoggedIn()
 		if (textFieldContent !== "" && !isNaN(+textFieldContent)) {
 			submitBuyOrSell(false)
 		}
@@ -54,7 +65,7 @@ const CryptoCard = (dataIdx) => {
 		setTextFieldContent(event.target.value)
 	}
 	function submitBuyOrSell(isBuy) {
-		if(isBuy){
+		if (isBuy) {
 			window.alert("You have bought " + textFieldContent + " " + dataIdx.name + "!")
 		} else {
 			window.alert("You have sold " + textFieldContent + " " + dataIdx.name + "!")
@@ -65,24 +76,25 @@ const CryptoCard = (dataIdx) => {
 	}
 
 
-	if(buyClicked){
+	if (buyClicked) {
 		textFieldLabel = "Enter Quantity to Buy"
 		textFieldHelper = "Then Click Buy to Place Order"
-	} else if (sellClicked){
+	} else if (sellClicked) {
 		textFieldLabel = "Enter Quantity to Sell"
 		textFieldHelper = "Then Click Sell to Place Order"
 	}
-	if(isNaN(+textFieldContent)){
+	if (isNaN(+textFieldContent)) {
 		textFieldLabel = "Please Enter Numbers Only"
-	} 
+	}
 	return (
-		<Grid item>
 
-			<Card sx={{ minWidth: 400 }}>
-				<Stack direction="row" >
-					<div style={{ width: '96px' }}>
+		<Grid item xs="auto">
+
+			<Card sx={{ minWidth: 400, boxShadow: 10 }}>
+				<Stack direction="row" justifyContent="center" alignItems="center">
+					<Box sx={{ width: '96px' }}>
 						<img src={imageSrc} alt="" style={imgStyle} />
-					</div>
+					</Box>
 					<CardContent>
 						<Typography gutterBottom variant="h5" component="div">
 							{dataIdx.name} ({dataIdx.symbol})
@@ -95,15 +107,17 @@ const CryptoCard = (dataIdx) => {
 						</Typography>
 					</CardContent>
 				</Stack>
+				<Divider />
+				<ClickAwayListener onClickAway={clickAway}>
 
-				<CardActions>
+					<CardActions>
 
-					<Button size="small" onClick={() => clickBuyButton(dataIdx.slug)}>Buy</Button>
+						<Button size="small" onClick={() => clickBuyButton(dataIdx.slug)}>Buy</Button>
 
-					<Button size="small" onClick={() => clickSellButton(dataIdx.slug)}>Sell</Button>
-					<div
+						<Button size="small" onClick={() => clickSellButton(dataIdx.slug)}>Sell</Button>
+						{/* <div
 						onBlur={() => clickAway()}
-					>
+					> */}
 						{buyClicked ?
 							<TextField
 								id="standard-helperText"
@@ -122,8 +136,10 @@ const CryptoCard = (dataIdx) => {
 								variant="standard"
 								onChange={(event) => handleTextField(event)}
 							/> : ""}
-					</div>
-				</CardActions>
+						{/* </div> */}
+					</CardActions>
+				</ClickAwayListener>
+
 			</Card>
 
 		</Grid >

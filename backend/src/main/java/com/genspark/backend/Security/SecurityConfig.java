@@ -54,6 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers("/account").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
 
+//        http.authorizeRequests().antMatchers("/account").permitAll();
+        //http.authorizeRequests().antMatchers("/portfolio").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+
 //        http.authorizeRequests().antMatchers("/token/refresh/**").permitAll();
 //        http.authorizeRequests().antMatchers(GET, "/account/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().anyRequest().authenticated();
@@ -70,15 +73,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
 
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-//        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://pro-api.coinmarketcap.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT"));
+        configuration.applyPermitDefaultValues();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

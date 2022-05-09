@@ -17,6 +17,11 @@ public class AppUser {
     private int id;
     private String username;
     private String password;
+    private String email;
+    private String bio;
+    private String name;
+    private int age;
+
     //load user and at same time load roles from DB
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<AppRole> roles = new ArrayList<>();

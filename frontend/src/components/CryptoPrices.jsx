@@ -41,7 +41,6 @@ function createData(name, symbol, price, percent_change_1h, percent_change_24h, 
 const sideBarStyle = {
   maxWidth: '500px',
   minWidth: '250px',
-  backgroundColor: 'white',
 
 }
 

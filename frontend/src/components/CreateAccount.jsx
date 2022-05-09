@@ -16,11 +16,11 @@ const CreateAccount = () => {
 		}
 	}, []);
 
-	//fix this next
 	useEffect(() => {
 		if (createdUser === null) return;
 
-		const fetchFrom = 'http://localhost:8080/login?username=' + createdUser.username + '&password=' + createdUser.password
+		console.log(createdUser)
+		const fetchFrom = 'http://localhost:8080/login?username=' + username + '&password=' + password
 		const payload = {
 			method: 'POST',
 			headers: {
@@ -35,7 +35,7 @@ const CreateAccount = () => {
 			.then(tokens => {
 				localStorage.setItem('refresh', tokens.refresh_token)
 				window.alert("Account creation Successful! You have been logged in.")
-				setCreatedUser(null);
+				console.log("Create account and login success!")
 
 				navigate("/account")
 			})

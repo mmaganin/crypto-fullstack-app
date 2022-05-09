@@ -19,7 +19,7 @@ const Footer = () => {
 				<img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />
 			</div> */}
 			<Box sx={{ my: 2, color: 'white', display: 'block' }}>
-				© 2020 Copyright: Michael Maganini
+				© 2022 Copyright: Michael Maganini
 			</Box>
 			{/* <div style={{ width: '65px' }}>
 				<img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />

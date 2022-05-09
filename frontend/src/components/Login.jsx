@@ -1,24 +1,22 @@
 import { Box, TextField, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
+import { authLoad } from "./Account";
 
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [loginTokens, setLoginTokens] = useState(null);
-    const [access_token, setAccess_token] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [isError, setIsError] = useState(false);
     let navigate = useNavigate();
 
     useEffect(() => {
         const refresh_token = localStorage.getItem('refresh')
-        if(refresh_token !== null){
+        if (refresh_token !== null) {
             navigate("/account")
         }
-	}, []);
+    }, []);
 
     function handleUsername(e) {
         setUsername(e.target.value)
@@ -27,35 +25,24 @@ const Login = () => {
         setPassword(e.target.value)
     }
     function handleSubmit() {
-        const fetchFrom = 'http://localhost:8080/login?username=' + username + '&password=' + password
-        const payload = {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-        fetch(fetchFrom, payload)
+        const load = authLoad(username, password)
+        fetch(load.fetchFrom, load.payload)
             .then(response => {
-                if(!response.ok) throw new Error(response.status);
-                else{
-                    setIsLoading(true);
-                    setErrorMsg(null);
+                if (!response.ok) throw new Error(response.status);
+                else {
                     return response.json();
                 }
             })
             .then(loginTokens => {
-                setAccess_token(loginTokens.access_token)
                 localStorage.setItem('refresh', loginTokens.refresh_token)
                 console.log("SUCCESSFUL LOGIN")
-                window.alert("Login Successful!")
-                setIsLoading(false)
-                setLoginTokens(loginTokens)
+                window.alert("Authentication Successful!")
+                setIsError(false)
                 navigate("/account")
             })
             .catch((error) => {
-                setErrorMsg(error)
-                setIsLoading(false);
                 console.log("Fetch failed: " + error)
+                setIsError(true)
             })
     }
 
@@ -89,8 +76,7 @@ const Login = () => {
                 <Button variant="outlined" onClick={handleSubmit}>
                     Login
                 </Button>
-                <p>{isLoading ? "Loading" : ""} {errorMsg !== null ? "You have entered incorrect login credentials" : "" }</p>
-                
+                {isError ? "You have entered incorrect login credentials" : ""}
 
             </Box>
         </div>

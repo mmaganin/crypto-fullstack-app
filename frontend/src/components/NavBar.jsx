@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+
 const pages = ['Cryptocurrency Markets', 'My Portfolio'];
 
 const linkStyle = {
@@ -64,11 +65,11 @@ const ResponsiveAppBar = () => {
               sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
             >
               <Tooltip title="Navigate to Homepage">
-                <div style={{ width: '65px' }}>
+                <Box sx={{ width: '65px' }}>
                   <Link to="/" >
-                    <img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />
+                    <img src="images/other/nav-bar-logo.jpg" alt="" style={imgStyle} />
                   </Link>
-                </div>
+                </Box>
               </Tooltip>
 
             </Typography>
@@ -89,11 +90,9 @@ const ResponsiveAppBar = () => {
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Account Settings">
-                {/* <Link to="/account" style={linkStyle}> */}
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <AccountCircle />
                 </IconButton>
-                {/* </Link> */}
               </Tooltip>
               <Menu
                 sx={{ mt: '45px' }}
@@ -126,15 +125,17 @@ const ResponsiveAppBar = () => {
                     </Link>
                   </div>
                   :
-                  <div><Link to="/account" style={accountLinkStyle}>
-                    <MenuItem key="Account Info" onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">Account Info</Typography>
-                    </MenuItem>
-                  </Link>
+                  <div>
+                    <Link to="/account" style={accountLinkStyle}>
+                      <MenuItem key="Account Info" onClick={handleCloseUserMenu}>
+                        <Typography textAlign="center">Account Info</Typography>
+                      </MenuItem>
+                    </Link>
 
                     <MenuItem key="Logout" onClick={handleLogout}>
                       <Typography textAlign="center">Logout</Typography>
-                    </MenuItem></div>
+                    </MenuItem>
+                  </div>
                 }
 
 

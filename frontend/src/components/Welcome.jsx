@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid } from '@mui/material'
+import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, Divider } from '@mui/material'
 import CryptoCard from "./CryptoCard";
 
 
 const sideBarStyle = {
   maxWidth: '500px',
   minWidth: '250px',
-  backgroundColor: 'white',
 
 }
 const imgStyle = {
@@ -35,10 +34,14 @@ const Welcome = () => {
   return (
     <Stack direction="row" >
       <Box sx={sideBarStyle} />
-      <Grid container spacing={2}>
+      <Grid container
+        spacing={2}
+        direction="row"
+        justifyContent="center"
+        alignItems="center" >
         {data === null ? "loading" : data
           .sort((a, b) => parseFloat(b.market_cap) - parseFloat(a.market_cap))
-          .map((dataIdx) => <CryptoCard {...dataIdx}/>)}
+          .map((dataIdx) => <CryptoCard {...dataIdx} />)}
       </Grid>
       <Box sx={sideBarStyle} />
     </Stack>

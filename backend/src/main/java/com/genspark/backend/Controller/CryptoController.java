@@ -76,31 +76,48 @@ public class CryptoController {
     public ResponseEntity<AppUser> createUser(@RequestBody UserCreds userCreds) throws IOException {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/createaccount").toUriString());
 
-        if(appUserService.getUser(userCreds.getUsername()) == null){
-            Collection<AppRole> roles = new ArrayList<>();
-            AppRole userRole = new AppRole(0, "ROLE_USER");
-
-            for (AppRole appRole : appUserService.getRoles()) {
-                if (appRole.getName().equals("ROLE_USER")) {
-                    userRole = appRole;
-                }
-            }
-            roles.add(userRole);
-            AppUser appUser = new AppUser(0, userCreds.getUsername(), userCreds.getPassword(), roles);
-
-            return ResponseEntity.created(uri).body(appUserService.saveUser(appUser));
-        } else {
+        if (appUserService.getUser(userCreds.getUsername()) != null)
             return ResponseEntity.unprocessableEntity().build();
+
+        Collection<AppRole> roles = new ArrayList<>();
+        AppRole userRole = new AppRole(0, "ROLE_USER");
+        for (AppRole appRole : appUserService.getRoles()) {
+            if (appRole.getName().equals("ROLE_USER")) {
+                userRole = appRole;
+            }
         }
+        roles.add(userRole);
+        AppUser appUser = new AppUser(0, userCreds.getUsername(), userCreds.getPassword(), "", "", "", -1, roles);
+
+        return ResponseEntity.created(uri).body(appUserService.saveUser(appUser));
+
     }
 
     @GetMapping("/account")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<CurrUserInfo> getUserInfo() {
-        String username = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<AppUser> getUserInfo() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AppUser appUser = appUserService.getUser(username);
 
-        return ResponseEntity.ok().body(new CurrUserInfo(appUser.getUsername(), appUser.getPassword()));
+        return ResponseEntity.ok().body(appUser);
+    }
+
+    @PostMapping("/account")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<UserDetails> editAccount(@RequestBody UserDetails userDetails) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!username.equals(userDetails.getUsername())) return ResponseEntity.unprocessableEntity().body(userDetails);
+
+        AppUser appUser = appUserService.getUser(username);
+        appUser.setEmail(userDetails.getEmail());
+        appUser.setAge(userDetails.getAge());
+        appUser.setBio(userDetails.getBio());
+        appUser.setName(userDetails.getName());
+        appUser.setPassword(userDetails.getPassword());
+        appUserService.saveUser(appUser);
+
+        return ResponseEntity.ok().body(userDetails);
     }
 
     //ROLES
@@ -133,8 +150,8 @@ public class CryptoController {
 
         //create utility class to get rid of repeating code
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-            try{
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secretKeyExampleMustBeMoreSecureForRealApplication".getBytes());
                 JWTVerifier verifier = JWT.require(algorithm).build();
@@ -155,7 +172,7 @@ public class CryptoController {
                 tokens.put("refresh_token", refresh_token);
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-            } catch(Exception e){
+            } catch (Exception e) {
                 response.setHeader("error", e.getMessage());
                 response.setStatus(FORBIDDEN.value());
 //                    response.sendError(FORBIDDEN.value());
@@ -169,6 +186,7 @@ public class CryptoController {
         }
     }
 }
+
 @Data
 class RoleToUserForm {
     private String username;
@@ -177,14 +195,18 @@ class RoleToUserForm {
 
 @Data
 @AllArgsConstructor
-class CurrUserInfo {
+class UserCreds {
     private String username;
     private String password;
 }
 
 @Data
 @AllArgsConstructor
-class UserCreds {
+class UserDetails {
     private String username;
     private String password;
+    private String email;
+    private String bio;
+    private String name;
+    private int age;
 }
