@@ -115,7 +115,7 @@ const Account = () => {
 			name: name
 		}
 
-		editAccount(access_token, userInfo)
+		editAccount(access_token, userInfo, "account")
 
 	}, [isAuthError, isAuthenticated]);
 
@@ -212,7 +212,7 @@ const Account = () => {
 		const title = "Change " + type;
 		const label = "Enter a new " + type;
 		var displayField = field;
-		if(type === "password"){
+		if (type === "password") {
 			displayField = "•••••"
 		}
 
@@ -333,9 +333,10 @@ const Account = () => {
 						<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 							<TextField
 								id="standard-helperText"
-								label="Enter your old password."
+								label="Enter your current password."
 								defaultValue=""
 								variant="outlined"
+								type="password"
 								onChange={(event) => handleTextField(event, "oldPassword")}
 							/>
 							<Button size="small" onClick={() => handleSubmit()}>Submit Changes</Button>
@@ -351,14 +352,26 @@ const Account = () => {
 	);
 }
 
-function editAccount(access_token, userInfo) {
+export function editAccount(access_token, userInfo, editType) {
 	if (access_token === "" || access_token === "must login") return;
 
-	const json = JSON.stringify({
-		username: userInfo.username, password: userInfo.password, email: userInfo.email,
-		bio: userInfo.bio, name: userInfo.name, age: userInfo.age
-	})
-	const fetchFrom = 'http://localhost:8080/account'
+	var json;
+	var fetchFrom;
+	if (editType === "portfolio") {
+		json = JSON.stringify({
+			username: userInfo.username, password: userInfo.password, crypto_to_add: userInfo.crypto_to_add
+		})
+		fetchFrom = 'http://localhost:8080/portfolio'
+	} else if (editType === "account") {
+		json = JSON.stringify({
+			username: userInfo.username, password: userInfo.password, email: userInfo.email,
+			bio: userInfo.bio, name: userInfo.name, age: userInfo.age
+		})
+		fetchFrom = 'http://localhost:8080/account'
+	} else {
+		return;
+	}
+
 	const payload = {
 		method: 'POST',
 		headers: {
@@ -375,6 +388,7 @@ function editAccount(access_token, userInfo) {
 		.then((userDetails) => {
 			console.log("User profile update Success");
 			window.alert("User profile update success!")
+			window.location.reload();
 		})
 		.catch((error) => {
 			window.alert("User profile update failed!")

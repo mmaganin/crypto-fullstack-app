@@ -1,7 +1,7 @@
 package com.genspark.backend.Service;
 
-import com.genspark.backend.Security.AppRole;
-import com.genspark.backend.Security.AppUser;
+import com.genspark.backend.Entity.AppRole;
+import com.genspark.backend.Entity.AppUser;
 
 import java.util.List;
 

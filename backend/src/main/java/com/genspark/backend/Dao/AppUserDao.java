@@ -1,7 +1,6 @@
 package com.genspark.backend.Dao;
 
-import com.genspark.backend.Entity.CryptoObj;
-import com.genspark.backend.Security.AppUser;
+import com.genspark.backend.Entity.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

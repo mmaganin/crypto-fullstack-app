@@ -49,17 +49,13 @@ const CryptoPrices = () => {
   const [fetchData, setFetch] = useState(true);
 
   useEffect(() => {
-    if (fetchData) {
-      const payload = {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        },
-      }
-      fetch('http://localhost:8080/markets', payload)
-        .then(response => response.json())
-        .then(data => setData(data))
-    }
+    if (!fetchData) return;
+    const fetchLoad = marketsLoad();
+
+    fetch(fetchLoad.fetchFrom, fetchLoad.payload)
+      .then(response => response.json())
+      .then(data => setData(data))
+
   }, [fetchData]);
 
   function handleRefresh() {
@@ -83,7 +79,8 @@ const CryptoPrices = () => {
   const rows = data === null ? null :
     Array.from(data.map((dataIdx) =>
       createData(dataIdx.name, dataIdx.symbol, dataIdx.price, dataIdx.percent_change_1h,
-        dataIdx.percent_change_24h, dataIdx.percent_change_7d, dataIdx.percent_change_30d, dataIdx.market_cap, dataIdx.circulating_supply, parseInt(dataIdx.cmc_rank))))
+        dataIdx.percent_change_24h, dataIdx.percent_change_7d, dataIdx.percent_change_30d,
+        dataIdx.market_cap, dataIdx.circulating_supply, parseInt(dataIdx.cmc_rank))))
 
 
   return (
@@ -118,7 +115,18 @@ const CryptoPrices = () => {
   );
 }
 
+export function marketsLoad() {
+  var fetchLoad = {
+    fetchFrom: 'http://localhost:8080/markets',
+    payload: {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  }
 
-
+  return fetchLoad;
+}
 
 export default CryptoPrices;

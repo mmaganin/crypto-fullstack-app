@@ -2,11 +2,10 @@ package com.genspark.backend.Service;
 
 import com.genspark.backend.Dao.AppRoleDao;
 import com.genspark.backend.Dao.AppUserDao;
-import com.genspark.backend.Security.AppRole;
-import com.genspark.backend.Security.AppUser;
+import com.genspark.backend.Entity.AppRole;
+import com.genspark.backend.Entity.AppUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

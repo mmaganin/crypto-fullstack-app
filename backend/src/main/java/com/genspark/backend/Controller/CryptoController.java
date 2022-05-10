@@ -5,9 +5,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.genspark.backend.Entity.AppUserCrypto;
 import com.genspark.backend.Entity.CryptoObj;
-import com.genspark.backend.Security.AppRole;
-import com.genspark.backend.Security.AppUser;
+import com.genspark.backend.Entity.AppRole;
+import com.genspark.backend.Entity.AppUser;
 import com.genspark.backend.Service.AppUserService;
 import com.genspark.backend.Service.CryptoService;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -87,7 +87,8 @@ public class CryptoController {
             }
         }
         roles.add(userRole);
-        AppUser appUser = new AppUser(0, userCreds.getUsername(), userCreds.getPassword(), "", "", "", -1, roles);
+        AppUser appUser = new AppUser(0, userCreds.getUsername(), userCreds.getPassword(), "",
+                        "", "", -1, new ArrayList<>(), roles);
 
         return ResponseEntity.created(uri).body(appUserService.saveUser(appUser));
 
@@ -118,6 +119,50 @@ public class CryptoController {
         appUserService.saveUser(appUser);
 
         return ResponseEntity.ok().body(userDetails);
+    }
+
+    @PostMapping("/portfolio")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<UserPortfolioDetails> editPortfolio(@RequestBody UserPortfolioDetails userPortfolioDetails) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!username.equals(userPortfolioDetails.getUsername())) return ResponseEntity.unprocessableEntity().body(userPortfolioDetails);
+
+        AppUser appUser = appUserService.getUser(username);
+        Collection<AppUserCrypto> appUserCryptos =  appUser.getCrypto_in_portfolio();
+
+        boolean addNewCrypto = true;
+        int newQuantity = 0;
+        AppUserCrypto newCryptoToAdd = userPortfolioDetails.getCrypto_to_add();
+        AppUserCrypto placeholder = new AppUserCrypto();
+        for(AppUserCrypto appUserCrypto : appUserCryptos){
+            if(appUserCrypto.getSlug().equals(newCryptoToAdd.getSlug())){
+                if((newQuantity = newCryptoToAdd.getQuantity() + appUserCrypto.getQuantity()) < 0){
+                    newQuantity = 0;
+                }
+                placeholder = appUserCrypto;
+                addNewCrypto = false;
+                break;
+            }
+        }
+
+        if(addNewCrypto){
+            if(newCryptoToAdd.getQuantity() > 0){
+                appUserCryptos.add(newCryptoToAdd);
+            }
+        } else {
+            appUserCryptos.remove(placeholder);
+
+                placeholder.setQuantity(newQuantity);
+                appUserCryptos.add(placeholder);
+
+        }
+
+        appUser.setPassword(userPortfolioDetails.getPassword());
+        appUser.setCrypto_in_portfolio(appUserCryptos);
+        appUserService.saveUser(appUser);
+
+        return ResponseEntity.ok().body(userPortfolioDetails);
     }
 
     //ROLES
@@ -209,4 +254,12 @@ class UserDetails {
     private String bio;
     private String name;
     private int age;
+}
+
+@Data
+@AllArgsConstructor
+class UserPortfolioDetails {
+    private String username;
+    private String password;
+    private AppUserCrypto crypto_to_add;
 }

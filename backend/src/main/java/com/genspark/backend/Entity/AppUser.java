@@ -1,4 +1,4 @@
-package com.genspark.backend.Security;
+package com.genspark.backend.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static javax.persistence.GenerationType.AUTO;
 
@@ -21,9 +22,14 @@ public class AppUser {
     private String bio;
     private String name;
     private int age;
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    private Collection<AppUserCrypto> crypto_in_portfolio = new ArrayList<>();
 
     //load user and at same time load roles from DB
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<AppRole> roles = new ArrayList<>();
-
 }
+

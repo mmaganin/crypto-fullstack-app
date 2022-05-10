@@ -120,7 +120,7 @@ const ResponsiveAppBar = () => {
 
                     <Link to="/login" style={accountLinkStyle}>
                       <MenuItem key="Login" onClick={handleCloseUserMenu}>
-                        <Typography textAlign="center">Login</Typography>
+                        <Typography textAlign="center">Sign in</Typography>
                       </MenuItem>
                     </Link>
                   </div>

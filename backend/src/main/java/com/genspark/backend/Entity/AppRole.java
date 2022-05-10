@@ -1,4 +1,4 @@
-package com.genspark.backend.Security;
+package com.genspark.backend.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
