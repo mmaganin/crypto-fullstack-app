@@ -6,6 +6,11 @@ const imgStyle = {
   width: '100%',
   height: 'auto',
 }
+
+/**
+ * @author Michael Maganini
+ * @returns Footer at the bottom of every page
+ */
 const Footer = () => {
 	return (
 		<Box

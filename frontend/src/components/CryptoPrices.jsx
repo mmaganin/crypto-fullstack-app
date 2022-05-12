@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Stack, Card, CardContent, CardActionArea, CardMedia, Typography, CardActions, Button, Box, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { useGetMarkets } from "../utility/CustomHooks";
 
 const titleStyle = {
   fontSize: 48,
@@ -8,20 +9,12 @@ const titleStyle = {
   padding: 2,
 }
 
-
+/**
+ * @author Michael Maganini
+ * @returns Cryptocurrency Markets page
+ */
 const CryptoPrices = () => {
-  const [data, setData] = useState(null);
-  const [fetchData, setFetch] = useState(true);
-
-  useEffect(() => {
-    if (!fetchData) return;
-    const fetchLoad = marketsLoad();
-
-    fetch(fetchLoad.fetchFrom, fetchLoad.payload)
-      .then(response => response.json())
-      .then(data => setData(data))
-
-  }, [fetchData]);
+  var data = useGetMarkets();
 
   function handleRefresh() {
     const payload = {
@@ -36,7 +29,6 @@ const CryptoPrices = () => {
         else return response.json();
       })
       .then(data => {
-        setData(data)
         console.log("successful market data refresh fetch")
         window.alert("Market data refreshed from coinmarketcap.com, DO NOT refresh too often... There is a limited number of API calls!")
         window.location.reload()
@@ -77,7 +69,7 @@ const CryptoPrices = () => {
       </Button> {/*button to fetch new market data*/}
 
       <Box sx={{ fontWeight: 'light' }}>
-        Last Refreshed (UTC): {data === null ? "loading..." : data[0].last_updated} from <a href="https://coinmarketcap.com/">https://coinmarketcap.com/</a> API
+        Last Refreshed (UTC): {data === null ? "loading..." : data[0].last_updated} from <a href="https://coinmarketcap.com/">coinmarketcap.com</a> API
       </Box> {/*timestamp for last data refresh*/}
     </Box>
   );
@@ -123,20 +115,6 @@ function createData(name, symbol, price, percent_change_1h, percent_change_24h, 
     circulating_supply: displayCirculating_supply,
     id: displayId
   };
-}
-
-export function marketsLoad() {
-  var fetchLoad = {
-    fetchFrom: 'http://localhost:8080/markets',
-    payload: {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-  }
-
-  return fetchLoad;
 }
 
 export default CryptoPrices;

@@ -4,7 +4,6 @@ import Footer from "./components/Footer";
 import Account from "./components/Account";
 import CreateAccount from "./components/CreateAccount";
 import Login from "./components/Login";
-import Jumbotron from "./components/Jumbotron";
 import Portfolio from "./components/Portfolio";
 import CryptoPrices from "./components/CryptoPrices";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";

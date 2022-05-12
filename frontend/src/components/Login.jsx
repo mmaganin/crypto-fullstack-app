@@ -1,7 +1,7 @@
 import { Box, TextField, Button, Stack, Card } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
-import { authLoad } from "./Account";
+import { useAuthenticate, useNavigateAccount } from "../utility/CustomHooks";
 
 const titleStyle = {
     fontSize: 32,
@@ -13,20 +13,19 @@ const cardStyle = {
     margin: 5
 }
 
+/**
+ * @author Michael Maganini
+ * @returns Sign In page (aka Login)
+ */
 const Login = () => {
+    //states
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-
-    const [isError, setIsError] = useState(false);
-    let navigate = useNavigate();
-
-    useEffect(() => {
-        const refresh_token = localStorage.getItem('refresh')
-        if (refresh_token !== null) {
-            navigate("/account")
-        }
-    }, []);
-
+    const [canAuthenticate, setCanAuthenticate] = useState(false);
+    //hooks
+    useNavigateAccount()
+    var { isError } = useAuthenticate(username, password, canAuthenticate, true)
+    //handlers
     function handleUsername(e) {
         setUsername(e.target.value)
     }
@@ -34,25 +33,7 @@ const Login = () => {
         setPassword(e.target.value)
     }
     function handleSubmit() {
-        const load = authLoad(username, password)
-        fetch(load.fetchFrom, load.payload)
-            .then(response => {
-                if (!response.ok) throw new Error(response.status);
-                else {
-                    return response.json();
-                }
-            })
-            .then(loginTokens => {
-                localStorage.setItem('refresh', loginTokens.refresh_token)
-                console.log("SUCCESSFUL LOGIN")
-                window.alert("Authentication Successful!")
-                setIsError(false)
-                navigate("/account")
-            })
-            .catch((error) => {
-                console.log("Fetch failed: " + error)
-                setIsError(true)
-            })
+        setCanAuthenticate(true)
     }
 
     return (
@@ -88,7 +69,6 @@ const Login = () => {
                     Login
                 </Button>
                 {isError ? "You have entered incorrect login credentials" : ""}
-
             </Stack>{/*container that stacks create account card contents as column*/}
         </Card>/*card container with shadow*/
     );

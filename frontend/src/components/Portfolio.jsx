@@ -1,13 +1,9 @@
-import { ContentPasteOffSharp } from '@mui/icons-material';
 import { Box, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { fetchRefreshLoad, accessTokenLoad } from "./Account";
-import { marketsLoad } from "./CryptoPrices";
 
-const sideBarStyle = {
-	width: '196px',
-}
+import { useNavigateLogin, useGetMarkets, useFetchUser } from "../utility/CustomHooks";
+
 const imgStyle = {
 	width: '100%',
 	height: 'auto',
@@ -19,95 +15,37 @@ const headerStyle = {
 
 }
 
+/**
+ * @author Michael Maganini
+ * @returns My Portfolio page
+ */
 const Portfolio = () => {
-	let navigate = useNavigate();
+	//states
 	const [user, setUser] = useState(null);
 	const [access_token, setAccess_token] = useState("");
-	const [userFetched, setUserFetched] = useState(false);
-	const [data, setData] = useState(null);
-	const [fetchData, setFetch] = useState(true);
 	const [totalValue, setTotalValue] = useState(0);
 	const [infoToDisplay, setInfoToDisplay] = useState(null);
-
+	//hooks
+	useNavigateLogin()
+	var data = useGetMarkets();
+	var fetchInfo = useFetchUser(true)
+	useEffect(() => {
+		if(fetchInfo === null) return;
+		if(user === null) setUser(fetchInfo.user);
+		if(access_token === "") setAccess_token(fetchInfo.access_token);
+	},[fetchInfo]);	
+	//calculates total portfolio value and individual crypto values and details
+	useEffect(() => {
+		if (user === null || data === null) return;
+		var output = getPortfolioValues(user.crypto_in_portfolio, data)
+		setInfoToDisplay(output.infoToDisplay)
+		setTotalValue(output.totalValue)
+	}, [user, data]);
+	//variables
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
 	});
-
-	useEffect(() => {
-		const refresh_token = localStorage.getItem('refresh')
-		if (refresh_token === null) {
-			navigate("/login")
-		}
-	}, []);
-
-	useEffect(() => {
-		if (!fetchData) return;
-		const fetchLoad = marketsLoad();
-
-		fetch(fetchLoad.fetchFrom, fetchLoad.payload)
-			.then(response => response.json())
-			.then(data => setData(data))
-
-	}, [fetchData]);
-
-	//fetches access token from refresh token in local storage
-	useEffect(() => {
-		const refreshLoad = fetchRefreshLoad();
-		if (refreshLoad.payload === "must login") {
-			navigate("/login");
-			return;
-		}
-
-		fetch(refreshLoad.fetchFrom, refreshLoad.payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else return response.json();
-			})
-			.then(tokens => {
-				localStorage.setItem('refresh', tokens.refresh_token);
-				setAccess_token(tokens.access_token)
-				console.log("successful access token fetch: ")
-			})
-			.catch((error) => {
-				setAccess_token("")
-				console.log("Fetch failed: " + error)
-				localStorage.removeItem('refresh')
-				window.alert("You must login again!")
-				navigate("/login")
-			})
-	}, []);
-
-	//fetches a user's info (if valid access token fetched)
-	useEffect(() => {
-		if (userFetched || access_token === "" || access_token === "must login") return;
-		const accessLoad = accessTokenLoad(access_token)
-
-		fetch(accessLoad.fetchFrom, accessLoad.payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else return response.json();
-			})
-			.then(user => {
-				console.log("successful user info fetch: ")
-				setUserFetched(true)
-				setUser(user)
-			})
-			.catch((error) => {
-				console.log("User Fetch failed: " + error)
-			})
-
-	}, [access_token]);
-
-	//calculates total portfolio value
-	useEffect(() => {
-		if (user === null || data === null) return;
-		var output = getPortfolioValues(user.crypto_in_portfolio, data)
-		setInfoToDisplay(output[0])
-		setTotalValue(output[1])
-
-	}, [user, data]);
-
 	const rows = infoToDisplay === null ? null :
 		Array.from(infoToDisplay
 			.sort((a, b) => parseFloat(b.dollarValue) - parseFloat(a.dollarValue)))
@@ -123,7 +61,6 @@ const Portfolio = () => {
 				margin='25px'
 			>
 				<Box sx={headerStyle}>My Portfolio</Box>
-
 				<TableContainer component={Paper} >
 					<Table sx={{ minWidth: 960 }} aria-label="simple table">
 						<TableHead>
@@ -140,7 +77,6 @@ const Portfolio = () => {
 								rows.map((row) => {
 									return getTableRow(row)
 								})}
-
 							{infoToDisplay === null ? "" :
 								<TableRow
 									key={"totalValue"}
@@ -154,7 +90,6 @@ const Portfolio = () => {
 								</TableRow>
 							}
 						</TableBody>
-
 					</Table>
 				</TableContainer>
 			</Stack>
@@ -164,7 +99,6 @@ const Portfolio = () => {
 
 function getTableRow(row) {
 	var imgSource = "images/cryptocurrency/" + row.slug + ".png"
-
 	return (
 		<TableRow
 			key={row.nameAndSymbol}
@@ -230,6 +164,6 @@ function getPortfolioValues(cryptos, marketData) {
 		}
 	}
 
-	return [infoToDisplay, totalValue]
+	return {infoToDisplay, totalValue}
 }
 export default Portfolio;

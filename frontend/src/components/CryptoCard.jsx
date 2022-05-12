@@ -1,21 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, TextField, Divider } from '@mui/material'
+import React, { useState } from 'react'
+import { Card, CardActions, CardContent, Button, Typography, Box, Stack, Grid, TextField, Divider } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import ClickAwayListener from '@mui/base/ClickAwayListener';
-import { editAccount, authLoad, fetchRefreshLoad, accessTokenLoad } from "./Account";
+import { useEditAccount, useFetchUser, useAuthenticate } from "../utility/CustomHooks";
 
-const sideBarStyle = {
-	maxWidth: '500px',
-	minWidth: '250px',
-	backgroundColor: 'white',
-
-}
 const imgStyle = {
 	width: '100%',
 	height: 'auto',
 }
 
+/**
+ * @author Michael Maganini
+ * @param {{circulating_supply: string, cmc_rank: string, last_updated: string, market_cap: string, 
+ * 		name: string, percent_change_1h: string, percent_change_7d: string, percent_change_24h: string, 
+ * 		percent_change_30d: string, price: string, slug: string, symbol: string, total_supply: string}} dataIdx 
+ * @returns Single crypto card on trading homepage
+ */
+
 const CryptoCard = (dataIdx) => {
+	//VARIABLES
 	const imageSrc = "images/cryptocurrency/" + dataIdx.slug + ".png"
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -25,117 +28,41 @@ const CryptoCard = (dataIdx) => {
 	const market_cap = formatter.format(dataIdx.market_cap)
 	var textFieldLabel = "";
 	var textFieldHelper = "Then Enter Your Password";
-
+	//STATES
 	const [buyClicked, setBuyClicked] = useState(false);
 	const [sellClicked, setSellClicked] = useState(false);
 	const [passwordFieldContent, setPasswordFieldContent] = useState("");
 	const [quantityFieldContent, setQuantityFieldContent] = useState("");
+	//parsed float of quantityFieldContent when submitting order
 	const [quantity, setQuantity] = useState(0);
-	const [user, setUser] = useState(null);
-	const [access_token, setAccess_token] = useState("");
-	const [userFetched, setUserFetched] = useState(false);
-
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [isAuthError, setIsAuthError] = useState(false);
+	//allows hook to fetch user data when true
+	const [canFetchUser, setCanFetchUser] = useState(false);
+	//set equal to passwordFieldContent when submitting order
 	const [password, setPassword] = useState("");
-
+	//HOOKS
 	const navigate = useNavigate()
-
-	// console.log(username)
-	// console.log(access_token)
-	//console.log(username)
-
-
-	//fetches access token from refresh token in local storage
-	function getAccessToken() {
-		const refreshLoad = fetchRefreshLoad();
-		if (refreshLoad.payload === "must login") return;
-
-		fetch(refreshLoad.fetchFrom, refreshLoad.payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else return response.json();
-			})
-			.then(tokens => {
-				localStorage.setItem('refresh', tokens.refresh_token);
-				setAccess_token(tokens.access_token)
-				console.log("successful access token fetch: ")
-			})
-			.catch((error) => {
-				setAccess_token("")
-				console.log("Fetch failed: " + error)
-				localStorage.removeItem('refresh')
-			})
-	}
-
-	//fetches a user's info (if valid access token fetched)
-	useEffect(() => {
-		
-		if (userFetched || access_token === "" || access_token === "must login") return;
-		const accessLoad = accessTokenLoad(access_token)
-
-		fetch(accessLoad.fetchFrom, accessLoad.payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else return response.json();
-			})
-			.then(user => {
-				console.log("successful user info fetch: ")
-				setUserFetched(true)
-				setUser(user)
-			})
-			.catch((error) => {
-				console.log("User Fetch failed: " + error)
-			})
-	}, [access_token]);
-
+	//fetches user after submitting valid order
+	var fetchInfo;
+	fetchInfo = useFetchUser(canFetchUser);
+	var user = fetchInfo.user
+	var access_token = fetchInfo.access_token
 	//authenticates the user before submitting order
-	useEffect(() => {
-		if(user === null) return;
-
-		const load = authLoad(user.username, password)
-		fetch(load.fetchFrom, load.payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else {
-					return response.json();
-				}
-			})
-			.then(loginTokens => {
-				localStorage.setItem('refresh', loginTokens.refresh_token)
-				console.log("SUCCESSFUL AUTHENTICATION")
-				//window.alert("Authentication Successful!")
-				setIsAuthenticated(true)
-				setIsAuthError(false)
-			})
-			.catch((error) => {
-				console.log("Fetch failed: " + error)
-				window.alert("Your password is incorrect!")
-				setIsAuthenticated(false)
-				setIsAuthError(true)
-			})
-	}, [user]);
-
+	var { isAuthenticated } = useAuthenticate(user, password, true, false)
 	//adds crypto to user portfolio
-	useEffect(() => {
-		if (password === "" || isAuthError || !isAuthenticated) return;
-
-		var userInfo = {
-			username: user.username,
-			password: password,
-			crypto_to_add: {
-				id: 0,
-				slug: dataIdx.slug,
-				quantity: quantity
-			}
+	var userInfo = {
+		username: user === null ? "" : user.username,
+		password: password,
+		crypto_to_add: {
+			id: 0,
+			slug: dataIdx.slug,
+			quantity: quantity
 		}
-
-		setPasswordFieldContent("")
-		setQuantityFieldContent("")
-		editAccount(access_token, userInfo, "portfolio")
-	}, [isAuthError, isAuthenticated]);
-
-
+	}
+	useEditAccount(access_token, userInfo, password, isAuthenticated, "portfolio")
+	//HANDLERS
+	function submitOrder() {
+		setCanFetchUser(true)
+	}
 	function checkLoggedIn() {
 		const refresh_token = localStorage.getItem('refresh')
 		if (refresh_token === null) {
@@ -168,7 +95,6 @@ const CryptoCard = (dataIdx) => {
 		}
 		setSellClicked(true)
 		setBuyClicked(false)
-
 	}
 	function clickAway() {
 		if (quantityFieldContent === "") {
@@ -191,13 +117,10 @@ const CryptoCard = (dataIdx) => {
 			setQuantity(parseFloat(quantityFieldContent) * -1)
 			setPassword(passwordFieldContent)
 		}
-		console.log(quantity)
-		console.log(password)
-		getAccessToken();
+		submitOrder();
 		setSellClicked(false)
 		setBuyClicked(false)
 	}
-
 	function displayPasswordField() {
 		return (
 			<TextField
@@ -242,13 +165,9 @@ const CryptoCard = (dataIdx) => {
 				</Stack>
 				<Divider />
 				<ClickAwayListener onClickAway={clickAway}>
-
 					<CardActions>
-
 						<Button size="small" onClick={() => clickBuyButton()}>Buy</Button>
-
 						<Button size="small" onClick={() => clickSellButton()}>Sell</Button>
-
 						{buyClicked ?
 							<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 								<TextField
@@ -277,9 +196,7 @@ const CryptoCard = (dataIdx) => {
 							</Stack> : ""}
 					</CardActions>
 				</ClickAwayListener>
-
 			</Card>
-
 		</Grid >
 	)
 }

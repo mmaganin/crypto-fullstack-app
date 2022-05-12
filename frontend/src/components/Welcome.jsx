@@ -1,46 +1,22 @@
-import React, { useEffect, useState, useNavigate } from 'react'
-import { Card, CardActions, CardContent, CardMedia, Button, Typography, Box, Stack, Grid, Divider, Paper } from '@mui/material'
+import React from 'react'
+import {  Stack, Grid, Paper } from '@mui/material'
 import CryptoCard from "./CryptoCard";
-import { fetchRefreshLoad, accessTokenLoad } from "./Account";
-import { marketsLoad } from "./CryptoPrices";
+import { useGetMarkets } from "../utility/CustomHooks";
 
 
-const sideBarStyle = {
-	maxWidth: '500px',
-	minWidth: '250px',
-
-}
-const imgStyle = {
-	width: '100%',
-	height: 'auto',
-}
 const titleStyle = {
 	fontSize: 48,
 	fontWeight: 'regular',
 	padding: 2,
 }
 
+/**
+ * @author Michael Maganini
+ * @returns Trading Homepage page 
+ */
 const Welcome = () => {
-	const [data, setData] = useState(null);
-	const [fetchData, setFetch] = useState(true);
-
-
-
-	//let navigate = useNavigate();
-
-	//mounts market data
-	useEffect(() => {
-		if (!fetchData) return;
-		const fetchLoad = marketsLoad();
-
-		fetch(fetchLoad.fetchFrom, fetchLoad.payload)
-			.then(response => response.json())
-			.then(data => setData(data))
-
-	}, [fetchData]);
-
-
-
+	var data = useGetMarkets();
+	console.log(data)
 
 	return (
 		<Stack

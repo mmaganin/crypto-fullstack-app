@@ -27,6 +27,10 @@ const darkTheme = createTheme({
   },
 });
 
+/**
+ * @author Michael Maganini
+ * @returns Nav Bar at top of page with links to other pages
+ */
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);

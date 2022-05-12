@@ -1,6 +1,6 @@
 import { Box, TextField, Button, Stack, Card } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { useNavigateAccount, useAuthenticate } from "../utility/CustomHooks";
 
 const titleStyle = {
 	fontSize: 32,
@@ -12,55 +12,32 @@ const cardStyle = {
 	margin: 5 
 }
 
+/**
+ * @author Michael Maganini
+ * @returns create account page
+ */
 const CreateAccount = () => {
+	//STATES
+	//states that change when user types in forms
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	//changes when user is fetched
 	const [createdUser, setCreatedUser] = useState(null)
-	let navigate = useNavigate();
-
-	useEffect(() => {
-		const refresh_token = localStorage.getItem('refresh')
-		if (refresh_token !== null) {
-			navigate("/account")
-		}
-	}, []);
-
-	useEffect(() => {
-		if (createdUser === null) return;
-
-		console.log(createdUser)
-		const fetchFrom = 'http://localhost:8080/login?username=' + username + '&password=' + password
-		const payload = {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json",
-			},
-		}
-		fetch(fetchFrom, payload)
-			.then(response => {
-				if (!response.ok) throw new Error(response.status);
-				else return response.json();
-			})
-			.then(tokens => {
-				localStorage.setItem('refresh', tokens.refresh_token)
-				window.alert("Account creation Successful! You have been logged in.")
-				console.log("Create account and login success!")
-
-				navigate("/account")
-			})
-			.catch((error) => {
-				console.log("Create account login Fetch failed: " + error)
-			})
-	}, [createdUser]);
-
-
+	//changes when create account is clicked
+	const [canAuthenticate, setCanAuthenticate] = useState(false);
+	//HOOKS
+	useNavigateAccount();
+	useAuthenticate(createdUser === null ? "" : createdUser.username, password, canAuthenticate, true)
+	//HANDLERS
+	//handles changing state when user types in form
 	function handleUsername(e) {
 		setUsername(e.target.value)
 	}
 	function handlePassword(e) {
 		setPassword(e.target.value)
 	}
-
+	//runs when user clicks create account 
+	//POST request, saves new account in database if username doesnt already exist
 	function handleSubmit() {
 		const json = JSON.stringify({ username: username, password: password })
 		const fetchFrom = 'http://localhost:8080/createaccount'
@@ -78,6 +55,7 @@ const CreateAccount = () => {
 			})
 			.then((userDetails) => {
 				setCreatedUser(userDetails);
+				setCanAuthenticate(true)
 				console.log("Create account Fetch Success");
 			})
 			.catch((error) => {
