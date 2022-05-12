@@ -258,97 +258,87 @@ const Account = () => {
 	const displayOldPasswordField = displayFormAge || displayFormBio || displayFormEmail || displayFormName || displayFormPassword ?
 		true : false
 	return (
-		< Stack direction="row" >
-			<Box sx={sideBarStyle} />
-			<ClickAwayListener onClickAway={handleClickAway}>
-				<Grid container
-					spacing={2}
-					direction="column"
-					justifyContent="space-evenly"
-					alignContent="stretch"
-				>
-					<Divider flexItem />
-
-					<Grid item xs>
-						<Stack direction="row" alignItems="center" justifyContent='space-between'>
-							<Box>
-								<Box sx={headerStyle}>Credentials</Box>
-								<Box sx={sectionStyle}>
-									Username: {user === null ? "" : user.username}
-								</Box>
-								<Box sx={sectionStyle}>
-									Password: {displayFieldOrForm("password", "", displayFormPassword)}
-								</Box>
+		<ClickAwayListener onClickAway={handleClickAway}>
+			<Grid container
+				spacing={2}
+				direction="column"
+				justifyContent="space-evenly"
+				alignContent="stretch"
+				width="600px"
+			>
+				<Divider flexItem />
+				<Grid item xs>
+					<Stack direction="row" alignItems="center" justifyContent='space-between'>
+						<Box>
+							<Box sx={headerStyle}>Credentials</Box>
+							<Box sx={sectionStyle}>
+								Username: {user === null ? "" : user.username}
 							</Box>
-							<Box sx={{ width: '156px' }}>
-								<img src="images/other/credentials.png" alt="" style={imgStyle} />
+							<Box sx={sectionStyle}>
+								Password: {displayFieldOrForm("password", "", displayFormPassword)}
 							</Box>
-						</Stack>
-					</Grid >
-					<p></p>
-					<Divider flexItem />
-
-					<Grid item xs>
-						<Stack direction="row" alignItems="center" justifyContent='space-between'>
-							<Box>
-								<Box sx={headerStyle}>Your Info</Box>
-								<Box sx={sectionStyle}>
-									Name: {displayFieldOrForm("name", name, displayFormName)}
-								</Box>
-								<Box sx={sectionStyle}>
-									Email: {displayFieldOrForm("email", email, displayFormEmail)}
-								</Box>
-								<Box sx={sectionStyle}>
-									Age: {displayFieldOrForm("age", displayAge, displayFormAge)}
-								</Box>
+						</Box>
+						<Box sx={{ width: '156px' }}>
+							<img src="images/other/credentials.png" alt="" style={imgStyle} />
+						</Box>
+					</Stack>{/*container for credentials and image*/}
+				</Grid > {/*credentials section of grid*/}
+				<p></p>
+				<Divider flexItem />
+				<Grid item xs>
+					<Stack direction="row" alignItems="center" justifyContent='space-between'>
+						<Box>
+							<Box sx={headerStyle}>Your Info</Box>
+							<Box sx={sectionStyle}>
+								Name: {displayFieldOrForm("name", name, displayFormName)}
 							</Box>
-							<Box sx={{ width: '156px' }}>
-								<img src="images/other/info.png" alt="" style={imgStyle} />
+							<Box sx={sectionStyle}>
+								Email: {displayFieldOrForm("email", email, displayFormEmail)}
 							</Box>
-						</Stack>
-					</Grid>
-					<p></p>
-					<Divider flexItem />
-
-					<Grid item xs>
-						<Stack direction="row" alignItems="center" justifyContent='space-between'>
-							<Box>
-								<Box sx={headerStyle}>Bio</Box>
-								<Box sx={{ fontSize: 16, fontWeight: 'light' }}>
-									{displayFieldOrForm("bio", bio, displayFormBio)}
-								</Box>
+							<Box sx={sectionStyle}>
+								Age: {displayFieldOrForm("age", displayAge, displayFormAge)}
 							</Box>
-							<Box sx={{ width: '156px' }}>
-								<img src="images/other/bio.png" alt="" style={imgStyle} />
+						</Box>
+						<Box sx={{ width: '156px' }}>
+							<img src="images/other/info.png" alt="" style={imgStyle} />
+						</Box>
+					</Stack> {/*container for your info and image*/}
+				</Grid> {/*your info section of grid*/}
+				<p></p>
+				<Divider flexItem />
+				<Grid item xs>
+					<Stack direction="row" alignItems="center" justifyContent='space-between'>
+						<Box>
+							<Box sx={headerStyle}>Bio</Box>
+							<Box sx={{ fontSize: 16, fontWeight: 'light' }}>
+								{displayFieldOrForm("bio", bio, displayFormBio)}
 							</Box>
-						</Stack>
-					</Grid>
-					<p></p>
-					<Divider flexItem />
-					<p></p>
-
-
-					{displayOldPasswordField ?
-
-						<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
-							<TextField
-								id="standard-helperText"
-								label="Enter your current password."
-								defaultValue=""
-								variant="outlined"
-								type="password"
-								onChange={(event) => handleTextField(event, "oldPassword")}
-							/>
-							<Button size="small" onClick={() => handleSubmit()}>Submit Changes</Button>
-						</Stack>
-						:
-						""
-					}
-
-				</Grid>
-			</ClickAwayListener>
-			<Box sx={sideBarStyle} />
-		</Stack >
+						</Box>
+						<Box sx={{ width: '156px' }}>
+							<img src="images/other/bio.png" alt="" style={imgStyle} />
+						</Box>
+					</Stack> {/*container for bio and image*/}
+				</Grid> {/*Bio section of grid*/}
+				<p></p>
+				<Divider flexItem />
+				<p></p>
+				{displayOldPasswordField ?
+					<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
+						<TextField
+							id="standard-helperText"
+							label="Enter your current password."
+							defaultValue=""
+							variant="outlined"
+							type="password"
+							onChange={(event) => handleTextField(event, "oldPassword")}
+						/>
+						<Button size="small" onClick={() => handleSubmit()}>Submit Changes</Button>
+					</Stack> /*password form field for editing account*/
+					:
+					""
+				}
+			</Grid>{/*grid container for credentials, info, bio sections*/}
+		</ClickAwayListener> /*listens for clicks outside of account info area to close forms*/
 	);
 }
 

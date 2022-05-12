@@ -132,7 +132,7 @@ public class CryptoController {
         Collection<AppUserCrypto> appUserCryptos =  appUser.getCrypto_in_portfolio();
 
         boolean addNewCrypto = true;
-        int newQuantity = 0;
+        float newQuantity = 0;
         AppUserCrypto newCryptoToAdd = userPortfolioDetails.getCrypto_to_add();
         AppUserCrypto placeholder = new AppUserCrypto();
         for(AppUserCrypto appUserCrypto : appUserCryptos){

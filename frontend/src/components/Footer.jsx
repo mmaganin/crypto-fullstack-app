@@ -15,15 +15,9 @@ const Footer = () => {
 			py={{ xs: 1, sm: 1 }}
 			sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}
 		>
-			{/* <div style={{ width: '65px' }}>
-				<img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />
-			</div> */}
 			<Box sx={{ my: 2, color: 'white', display: 'block' }}>
 				© 2022 Copyright: Michael Maganini
 			</Box>
-			{/* <div style={{ width: '65px' }}>
-				<img src="images/nav-bar-logo2.jpg" alt="" style={imgStyle} />
-			</div> */}
 		</Box>
 	);
 }

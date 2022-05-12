@@ -25,6 +25,7 @@ const CryptoCard = (dataIdx) => {
 	const market_cap = formatter.format(dataIdx.market_cap)
 	var textFieldLabel = "";
 	var textFieldHelper = "Then Enter Your Password";
+
 	const [buyClicked, setBuyClicked] = useState(false);
 	const [sellClicked, setSellClicked] = useState(false);
 	const [passwordFieldContent, setPasswordFieldContent] = useState("");
@@ -91,7 +92,6 @@ const CryptoCard = (dataIdx) => {
 	//authenticates the user before submitting order
 	useEffect(() => {
 		if(user === null) return;
-
 
 		const load = authLoad(user.username, password)
 		fetch(load.fetchFrom, load.payload)
@@ -185,10 +185,10 @@ const CryptoCard = (dataIdx) => {
 	}
 	function submitBuyOrSell(isBuy) {
 		if (isBuy) {
-			setQuantity(parseInt(quantityFieldContent))
+			setQuantity(parseFloat(quantityFieldContent))
 			setPassword(passwordFieldContent)
 		} else {
-			setQuantity(parseInt(quantityFieldContent) * -1)
+			setQuantity(parseFloat(quantityFieldContent) * -1)
 			setPassword(passwordFieldContent)
 		}
 		console.log(quantity)
@@ -222,9 +222,7 @@ const CryptoCard = (dataIdx) => {
 		textFieldLabel = "Please Enter Numbers Only"
 	}
 	return (
-
 		<Grid item xs="auto">
-
 			<Card sx={{ minWidth: 400, boxShadow: 10 }}>
 				<Stack direction="row" justifyContent="center" alignItems="center">
 					<Box sx={{ width: '96px' }}>

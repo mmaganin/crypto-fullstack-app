@@ -3,9 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { authLoad } from "./Account";
 
-const sideBarStyle = {
-    minWidth: '100px',
+const titleStyle = {
+    fontSize: 32,
+    fontWeight: 'light'
+}
 
+const cardStyle = {
+    boxShadow: 10,
+    margin: 5
 }
 
 const Login = () => {
@@ -51,51 +56,41 @@ const Login = () => {
     }
 
     return (
-        <Stack direction="row" justifyContent='center'  >
-            <Box sx={sideBarStyle} />
-            <Card sx={{ boxShadow: 10 }}>
-                <Stack direction="column"
-                    width='400px'
-                    margin='25px'
-                    justifyContent='center'
-                    alignItems="center"
-                    alignContent="center"
-                    spacing={2}>
-                    <Box sx={{
-                        fontSize: 32,
-                        fontWeight: 'light'
-                    }}>
-                        Sign in
-                    </Box>
+        <Card sx={cardStyle}>
+            <Stack direction="column"
+                width='400px'
+                margin='25px'
+                justifyContent='center'
+                alignItems="center"
+                alignContent="center"
+                spacing={2}>
+                <Box sx={titleStyle}>
+                    Sign in
+                </Box>
+                <TextField
+                    required
+                    id="outlined-required"
+                    fullWidth
+                    label="Username"
+                    defaultValue={username}
+                    onChange={(e) => handleUsername(e)}
+                />{/*username field*/}
+                <TextField
+                    required
+                    id="outlined-password-input"
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    defaultValue={password}
+                    onChange={(e) => handlePassword(e)}
+                />{/*password field*/}
+                <Button variant="outlined" onClick={handleSubmit}>
+                    Login
+                </Button>
+                {isError ? "You have entered incorrect login credentials" : ""}
 
-                    <TextField
-                        required
-                        id="outlined-required"
-                        fullWidth
-                        label="Username"
-                        defaultValue={username}
-                        onChange={(e) => handleUsername(e)}
-
-                    />
-                    <TextField
-                        required
-                        id="outlined-password-input"
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        defaultValue={password}
-                        onChange={(e) => handlePassword(e)}
-                    />
-
-                    <Button variant="outlined" onClick={handleSubmit}>
-                        Login
-                    </Button>
-                    {isError ? "You have entered incorrect login credentials" : ""}
-
-                </Stack>
-            </Card>
-            <Box sx={sideBarStyle} />
-        </Stack>
+            </Stack>{/*container that stacks create account card contents as column*/}
+        </Card>/*card container with shadow*/
     );
 }
 

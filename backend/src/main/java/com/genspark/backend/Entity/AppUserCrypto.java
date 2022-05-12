@@ -18,6 +18,6 @@ public class AppUserCrypto {
     @GeneratedValue(strategy = AUTO)
     int id;
     private String slug;
-    private int quantity;
+    private float quantity;
 }
 
