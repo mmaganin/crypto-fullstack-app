@@ -63,6 +63,7 @@ const CryptoCard = (dataIdx) => {
 	function submitOrder() {
 		setCanFetchUser(true)
 	}
+	//navigates to log in page if buy or sell clicked and refresh token not in localStorage
 	function checkLoggedIn() {
 		const refresh_token = localStorage.getItem('refresh')
 		if (refresh_token === null) {
@@ -70,6 +71,7 @@ const CryptoCard = (dataIdx) => {
 			return;
 		}
 	}
+	//opens forms and submits orders if form not empty
 	function clickBuyButton() {
 		checkLoggedIn()
 		if (quantityFieldContent !== "" && !isNaN(+quantityFieldContent)) {
@@ -96,19 +98,21 @@ const CryptoCard = (dataIdx) => {
 		setSellClicked(true)
 		setBuyClicked(false)
 	}
+	//closes forms if clicked outside of card action area
 	function clickAway() {
 		if (quantityFieldContent === "") {
 			setSellClicked(false)
 			setBuyClicked(false)
 		}
-
 	}
+	//handle changing state when typing in forms 
 	function handleQuantityField(event) {
 		setQuantityFieldContent(event.target.value)
 	}
 	function handlePasswordField(event) {
 		setPasswordFieldContent(event.target.value)
 	}
+	//sets quantity and password to submit and submits order
 	function submitBuyOrSell(isBuy) {
 		if (isBuy) {
 			setQuantity(parseFloat(quantityFieldContent))
@@ -124,7 +128,7 @@ const CryptoCard = (dataIdx) => {
 	function displayPasswordField() {
 		return (
 			<TextField
-				id="standard-helperText"
+				id="helperText"
 				label="Enter Your Password"
 				helperText="Enter Before Submission"
 				size="small"
@@ -161,8 +165,8 @@ const CryptoCard = (dataIdx) => {
 						<Typography variant="body2" color="text.secondary">
 							Market Cap: {market_cap}
 						</Typography>
-					</CardContent>
-				</Stack>
+					</CardContent>{/*contains crypto info next to image*/}
+				</Stack>{/*orients crypto info and image in row*/}
 				<Divider />
 				<ClickAwayListener onClickAway={clickAway}>
 					<CardActions>
@@ -171,7 +175,7 @@ const CryptoCard = (dataIdx) => {
 						{buyClicked ?
 							<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 								<TextField
-									id="standard-helperText"
+									id="standard"
 									label={textFieldLabel}
 									size="small"
 									defaultValue={quantityFieldContent}
@@ -180,7 +184,7 @@ const CryptoCard = (dataIdx) => {
 									onChange={(event) => handleQuantityField(event)}
 								/>
 								{displayPasswordField()}
-							</Stack> : ""}
+							</Stack> : ""}{/*if Buy clicked: stacks quantity and password forms*/}
 						{sellClicked ?
 							<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 								<TextField
@@ -193,11 +197,11 @@ const CryptoCard = (dataIdx) => {
 									onChange={(event) => handleQuantityField(event)}
 								/>
 								{displayPasswordField()}
-							</Stack> : ""}
-					</CardActions>
-				</ClickAwayListener>
-			</Card>
-		</Grid >
+							</Stack> : ""}{/*if Sell clicked: stacks quantity and password forms*/}
+					</CardActions>{/*contains Buy/Sell buttons, password and quantity forms for orders, below divider on card*/}
+				</ClickAwayListener>{/*container, clicking outside of CardActions below divider closes forms*/}
+			</Card>{/*card containing info on a cryptocurrency*/}
+		</Grid >/*grid item containing single card on homepage*/
 	)
 }
 

@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { editAccount, fetchRefreshLoad, accessTokenLoad, authLoad, marketsLoad } from "./HelpfulMethods";
-
+/**
+ * fetches JWT access token with refresh token stored in localStorage
+ * @param {boolean} canFetch 
+ * @returns JWT access token to authenticate with backend security config
+ */
 export const useFetchAccessToken = (canFetch) => {
     const [access_token, setAccess_token] = useState("");
     let navigate = useNavigate();
@@ -30,23 +34,29 @@ export const useFetchAccessToken = (canFetch) => {
                 window.alert("You must login again!")
                 navigate("/login")
             })
-    }, [canFetch]);
+    }, [canFetch, navigate]);
 
     return access_token;
 }
-
+/**
+ * Retrieves an access token, and gets the current logged in user's info with the token 
+ * upon successful access token retrieval or canFetchUser is changes to true
+ * @param {boolean} canFetchUser 
+ * @returns {{access_token: String, 
+ *      user: {age: Number, bio: String, crypto_in_portfolio: Object, email: String, id: Number, 
+ *          name: String, password: String, roles: Array<Object>, username: String }, 
+ *      name: String, email: String, age: Number, bio: String}}
+ *      user, a user's info, and JWT access token
+ */
 export const useFetchUser = (canFetchUser) => {
-    const [userFetched, setUserFetched] = useState(false);
     const [user, setUser] = useState(null);
     const [age, setAge] = useState(-1);
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
     const [email, setEmail] = useState("");
-
     var access_token = useFetchAccessToken(canFetchUser)
-
     useEffect(() => {
-        if (!canFetchUser || userFetched || access_token === "" || access_token === "must login") return;
+        if (!canFetchUser || access_token === "" || access_token === "must login") return;
         const accessLoad = accessTokenLoad(access_token)
         
         fetch(accessLoad.fetchFrom, accessLoad.payload)
@@ -56,7 +66,6 @@ export const useFetchUser = (canFetchUser) => {
             })
             .then(user => {
                 console.log("successful user info fetch: ")
-                setUserFetched(true)
                 setUser(user)
                 setName(user.name)
                 setEmail(user.email)
@@ -70,27 +79,37 @@ export const useFetchUser = (canFetchUser) => {
 
     return { access_token, user, name, email, age, bio }
 }
-
+/**
+ * Edits a user's account once a user reauthenticates upon isAuthenticated state change to true
+ * @param {String} access_token 
+ * @param {Object} userInfo 
+ * @param {String} password 
+ * @param {boolean} isAuthenticated 
+ * @param {String} editType 
+ */
 export const useEditAccount = (access_token, userInfo, password, isAuthenticated, editType) => {
     useEffect(() => {
         if (password === "" || !isAuthenticated) return;
-
-        console.log(userInfo)
         editAccount(access_token, userInfo, editType)
-
-    }, [isAuthenticated]);
+    }, [isAuthenticated, access_token, userInfo, password, editType]);
 }
-
-
+/**
+ * authenticates the user to login, create account, or edit account 
+ * @param {String or Object} user //username inputted as string when logging in or creating account
+ * @param {String} password 
+ * @param {boolean} canAuthenticate 
+ * @param {boolean} isLoginOrCreate 
+ * @returns {{isAuthenticated: boolean, isError: boolean}}
+ */
 export const useAuthenticate = (user, password, canAuthenticate, isLoginOrCreate) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isError, setIsError] = useState(false);
     let navigate = useNavigate();
     var username = user;
+    if (!isLoginOrCreate) username = user === null ? "" : user.username;
 
     useEffect(() => {
         if (username === null || !canAuthenticate || username === "") return;
-        if (!isLoginOrCreate) username = user.username
         const load = authLoad(username, password)
         fetch(load.fetchFrom, load.payload)
             .then(response => {
@@ -102,7 +121,6 @@ export const useAuthenticate = (user, password, canAuthenticate, isLoginOrCreate
             .then(loginTokens => {
                 localStorage.setItem('refresh', loginTokens.refresh_token)
                 console.log("SUCCESSFUL AUTHENTICATION")
-                //window.alert("Authentication Successful!")
                 setIsAuthenticated(true)
                 if (isLoginOrCreate){
                     window.alert("Authentication Successful!")
@@ -115,27 +133,32 @@ export const useAuthenticate = (user, password, canAuthenticate, isLoginOrCreate
                 window.alert("Your password is incorrect!")
                 setIsAuthenticated(false)
             })
-    }, [user, canAuthenticate]);
+    }, [user, canAuthenticate, isLoginOrCreate, navigate, password, username]);
 
     return {isAuthenticated, isError}
 }
-
+/**
+ * retrieves crypto market data from backend 
+ * @returns {{circulating_supply: string, cmc_rank: string, last_updated: string, market_cap: string, 
+ * 		name: string, percent_change_1h: string, percent_change_7d: string, percent_change_24h: string, 
+ * 		percent_change_30d: string, price: string, slug: string, symbol: string, total_supply: string}} data
+ */
 export const useGetMarkets = () => {
     const [data, setData] = useState(null);
-
     useEffect(() => {
         if (data !== null) return;
         const fetchLoad = marketsLoad();
-
         fetch(fetchLoad.fetchFrom, fetchLoad.payload)
             .then(response => response.json())
             .then(data => setData(data))
 
-    }, []);
+    }, [data]);
 
     return data
 }
-
+/**
+ * navigates to account page if user is logged in (refresh token present in localStorage)
+ */
 export const useNavigateAccount = () => {
     let navigate = useNavigate();
     useEffect(() => {
@@ -143,9 +166,11 @@ export const useNavigateAccount = () => {
         if (refresh_token !== null) {
             navigate("/account")
         }
-    }, []);
+    }, [navigate]);
 }
-
+/**
+ * navigates to login page if user is not logged in (refresh token not present in localStorage)
+ */
 export const useNavigateLogin = () => {
     let navigate = useNavigate();
     useEffect(() => {
@@ -153,5 +178,5 @@ export const useNavigateLogin = () => {
 		if (refresh_token === null) {
 			navigate("/login")
 		}
-	}, []);
+	}, [navigate]);
 }

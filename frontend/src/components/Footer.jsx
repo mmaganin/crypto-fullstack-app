@@ -1,11 +1,5 @@
-import { Box, Container, Grid, Item, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-const imgStyle = {
-  width: '100%',
-  height: 'auto',
-}
 
 /**
  * @author Michael Maganini
@@ -14,8 +8,7 @@ const imgStyle = {
 const Footer = () => {
 	return (
 		<Box
-			color="black"
-			bgcolor="#343434"
+			bgcolor="#1B1B3A"
 			px={{ xs: 1, sm: 1 }}
 			py={{ xs: 1, sm: 1 }}
 			sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}
@@ -23,8 +16,9 @@ const Footer = () => {
 			<Box sx={{ my: 2, color: 'white', display: 'block' }}>
 				© 2022 Copyright: Michael Maganini
 			</Box>
-		</Box>
+		</Box>/*container for footer creates dark theme*/
 	);
+
 }
 
 export default Footer;

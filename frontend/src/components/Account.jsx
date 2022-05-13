@@ -7,17 +7,15 @@ import { useEditAccount, useFetchUser, useAuthenticate } from "../utility/Custom
 const headerStyle = {
 	fontSize: 48,
 	fontWeight: 'regular',
-
 }
 const sectionStyle = {
 	fontSize: 32,
-	fontWeight: 'light'
+	fontWeight: 'light',
 }
 const imgStyle = {
 	width: '100%',
 	height: 'auto',
 }
-
 
 /**
  * @author Michael Maganini
@@ -52,7 +50,7 @@ const Account = () => {
 		if (name === "") setName(fetchInfo.name);
 		if (bio === "") setBio(fetchInfo.bio);
 		if (email === "") setEmail(fetchInfo.email);
-	}, [fetchInfo]);
+	}, [fetchInfo, age, name, bio, email]);
 	//runs after user fetched, authenticates the user
 	var { isAuthenticated } = useAuthenticate(user, oldPassword, canAuthenticate, false)
 	//runs after authentication success, edits account with new info
@@ -111,7 +109,7 @@ const Account = () => {
 	}
 	/**
 	 * handles changing state when user types in edit field
-	 * @param {*} event 
+	 * @param {Object} event 
 	 * @param {String} type 
 	 */
 	function handleTextField(event, type) {
@@ -211,7 +209,8 @@ const Account = () => {
 				direction="column"
 				justifyContent="space-evenly"
 				alignContent="stretch"
-				width="600px"
+				width="850px"
+				sx={{margin: 3, padding: 3, bgcolor: 'white'}}
 			>
 				<Divider flexItem />
 				<Grid item xs>
@@ -268,7 +267,6 @@ const Account = () => {
 				</Grid> {/*Bio section of grid*/}
 				<p></p>
 				<Divider flexItem />
-				<p></p>
 				{displayOldPasswordField ?
 					<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 						<TextField

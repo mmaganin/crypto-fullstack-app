@@ -3,7 +3,6 @@ import {  Stack, Grid, Paper } from '@mui/material'
 import CryptoCard from "./CryptoCard";
 import { useGetMarkets } from "../utility/CustomHooks";
 
-
 const titleStyle = {
 	fontSize: 48,
 	fontWeight: 'regular',
@@ -12,12 +11,10 @@ const titleStyle = {
 
 /**
  * @author Michael Maganini
- * @returns Trading Homepage page 
+ * @returns Trading Desk page 
  */
 const Welcome = () => {
 	var data = useGetMarkets();
-	console.log(data)
-
 	return (
 		<Stack
 			direction="column"
@@ -25,7 +22,7 @@ const Welcome = () => {
 			alignItems="center"
 			sx={{ margin: 3 }}>
 			<Paper elevation={5} sx={titleStyle}>
-				Trading Homepage
+				Trading Desk
 			</Paper>
 			<Grid container
 				spacing={2}
@@ -36,12 +33,10 @@ const Welcome = () => {
 			>
 				{data === null ? "loading" : data
 					.sort((a, b) => parseFloat(b.market_cap) - parseFloat(a.market_cap))
-					.map((dataIdx) => <CryptoCard {...dataIdx} />)}
-			</Grid>
-		</Stack>
+					.map((dataIdx) => <CryptoCard key={dataIdx.slug} {...dataIdx} />)}
+			</Grid>{/*Grid that maps out CryptoCards containing functionality to Buy/Sell*/}
+		</Stack>/*container that Stacks Title of the page and the Grid of Cards*/
 	);
 }
-
-
 
 export default Welcome;

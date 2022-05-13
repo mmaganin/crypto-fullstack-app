@@ -1,3 +1,13 @@
+/**
+ * Edits a users account on backend for changing portfolio or editing account
+ * @param {String} access_token 
+ * @param {{username: String, password: String, email: String, 
+ * 		age: Number, bio: String, name: String}} userInfo (if editType="account")userInfo 
+ * 		  {{username: String, password: String, 
+ * 		crypto_to_add: { id: Number, slug: String, quantity: Number }}}userInfo 
+ * @param {String} editType ("portfolio" or "account") userInfo (if editType="portfolio")userInfo 
+ * @returns nothing if editType is neither "account" nor "portfolio"
+ */
 export function editAccount(access_token, userInfo, editType) {
 	if (access_token === "" || access_token === "must login") return;
 	var json;
@@ -39,7 +49,13 @@ export function editAccount(access_token, userInfo, editType) {
 			console.log("User profile update failed: " + error)
 		})
 }
-
+/**
+ * Returns the necessary REST load for authenticating a user
+ * @param {String} username 
+ * @param {String} password 
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, } } }} 
+ * URI to fetch from and the REST payload
+ */
 export function authLoad(username, password) {
 	var fetchLoad = {
 		fetchFrom: 'http://localhost:8080/login?username=' + username + '&password=' + password,
@@ -52,7 +68,12 @@ export function authLoad(username, password) {
 	}
 	return fetchLoad;
 }
-
+/**
+ * Returns the necessary REST load for getting account info from backend, includes authorization header requiring access token
+ * @param {String} access_token 
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, } } }} 
+ * URI to fetch from and the REST payload
+ */
 export function accessTokenLoad(access_token) {
 	if (access_token === "" || access_token === "must login") return null
 	var fetchLoad = {
@@ -67,7 +88,11 @@ export function accessTokenLoad(access_token) {
 	}
 	return fetchLoad;
 }
-
+/**
+ * Returns the necessary REST load for getting access token, includes authorization header requiring refresh token
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, String: String } } }} 
+ * URI to fetch from and the REST payload
+ */
 export function fetchRefreshLoad() {
 	var refresh_token = localStorage.getItem('refresh');
 	var fetchLoad = {
@@ -82,7 +107,11 @@ export function fetchRefreshLoad() {
 	}
 	return fetchLoad;
 }
-
+/**
+ * Returns the necessary REST load for getting market data
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, } } }} 
+ * URI to fetch from and the REST payload
+ */
 export function marketsLoad() {
     var fetchLoad = {
       fetchFrom: 'http://localhost:8080/markets',

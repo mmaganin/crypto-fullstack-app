@@ -1,7 +1,5 @@
 import { Box, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
-
 import { useNavigateLogin, useGetMarkets, useFetchUser } from "../utility/CustomHooks";
 
 const imgStyle = {
@@ -12,7 +10,6 @@ const imgStyle = {
 const headerStyle = {
 	fontSize: 48,
 	fontWeight: 'regular',
-
 }
 
 /**
@@ -20,20 +17,22 @@ const headerStyle = {
  * @returns My Portfolio page
  */
 const Portfolio = () => {
-	//states
+	//STATES
 	const [user, setUser] = useState(null);
 	const [access_token, setAccess_token] = useState("");
+	//total dollar value of portfolio
 	const [totalValue, setTotalValue] = useState(0);
 	const [infoToDisplay, setInfoToDisplay] = useState(null);
-	//hooks
+	//HOOKS
 	useNavigateLogin()
 	var data = useGetMarkets();
 	var fetchInfo = useFetchUser(true)
+	//assigns state values after user fetched successfully
 	useEffect(() => {
-		if(fetchInfo === null) return;
-		if(user === null) setUser(fetchInfo.user);
-		if(access_token === "") setAccess_token(fetchInfo.access_token);
-	},[fetchInfo]);	
+		if (fetchInfo === null) return;
+		if (user === null) setUser(fetchInfo.user);
+		if (access_token === "") setAccess_token(fetchInfo.access_token);
+	}, [fetchInfo, user, access_token]);
 	//calculates total portfolio value and individual crypto values and details
 	useEffect(() => {
 		if (user === null || data === null) return;
@@ -41,11 +40,12 @@ const Portfolio = () => {
 		setInfoToDisplay(output.infoToDisplay)
 		setTotalValue(output.totalValue)
 	}, [user, data]);
-	//variables
+	//VARIABLES
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
 	});
+	//puts portfolio data into a rows array to be mapped into the Table
 	const rows = infoToDisplay === null ? null :
 		Array.from(infoToDisplay
 			.sort((a, b) => parseFloat(b.dollarValue) - parseFloat(a.dollarValue)))
@@ -71,7 +71,7 @@ const Portfolio = () => {
 								<TableCell align="right">Price&nbsp;($)</TableCell>
 								<TableCell align="right">Dollar Value&nbsp;($)</TableCell>
 							</TableRow>
-						</TableHead>
+						</TableHead>{/*contains the title of each column in table*/}
 						<TableBody>
 							{infoToDisplay === null ? "" :
 								rows.map((row) => {
@@ -89,14 +89,22 @@ const Portfolio = () => {
 									<TableCell align="right">Portfolio Value = {formatter.format(totalValue)}</TableCell>
 								</TableRow>
 							}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			</Stack>
-		</Card>
+						</TableBody>{/*Rows of the table with total portfolio value as last row*/}
+					</Table>{/*table containing user portfolio and market data*/}
+				</TableContainer>{/*container for the Table*/}
+			</Stack>{/*container that Stacks and aligns the Title and the Table*/}
+		</Card>/*Card element container for Portfolio Page with shadow*/
 	);
 }
-
+/**
+ * creates TableRow element representing one row of the Table element
+ * @param {{nameAndSymbol: String, 
+ * 		quantity: Number, 
+ * 		dollarValue: String, 
+ * 		price: String, 
+ * 		slug: Strong}} row 
+ * @returns TableRow HTML for one row of the Table
+ */
 function getTableRow(row) {
 	var imgSource = "images/cryptocurrency/" + row.slug + ".png"
 	return (
@@ -115,10 +123,19 @@ function getTableRow(row) {
 			<TableCell align="right">{row.quantity}</TableCell>
 			<TableCell align="right">{row.price}</TableCell>
 			<TableCell align="right">{row.dollarValue}</TableCell>
-		</TableRow>
+		</TableRow>/*Single row of the Table*/
 	)
 }
-
+/**
+ * creates object that can be injected into a TableRow
+ * @param {String} name 
+ * @param {String} symbol 
+ * @param {Number} quantity 
+ * @param {String} dollarValue 
+ * @param {String} price 
+ * @param {String} slug 
+ * @returns Object with data to insert into a table row
+ */
 function createData(name, symbol, quantity, dollarValue, price, slug) {
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -136,15 +153,22 @@ function createData(name, symbol, quantity, dollarValue, price, slug) {
 		slug: slug
 	};
 }
-
-
+/**
+ * generates an array with indices containing objects with data corresponding to cryptos that the user has >0 quantity, 
+ * and calculates total value of portfolio
+ * @param {Array<{id: Number, slug: String, quantity, Float}>} cryptos 
+ * @param {Array<{circulating_supply: string, cmc_rank: string, last_updated: string, market_cap: string, 
+ * 		name: string, percent_change_1h: string, percent_change_7d: string, percent_change_24h: string, 
+ * 		percent_change_30d: string, price: string, slug: string, symbol: string, total_supply: string}>} marketData 
+ * @returns infoToDisplay: array of crypto data of cryptos in portfolio, totalValue: total $ value of portfolio
+ */
 function getPortfolioValues(cryptos, marketData) {
 	var totalValue = 0;
 	var infoToDisplay = [];
 	var infoToDisplayIdx;
+	//total dollar value of individual cryptos in portfolio
 	var dollarValue;
 	var k = 0;
-
 	for (let i = 0; i < marketData.length; i++) {
 		for (let j = 0; j < cryptos.length; j++) {
 			if (cryptos[j].slug === marketData[i].slug && parseFloat(cryptos[j].quantity) !== 0) {
@@ -163,7 +187,6 @@ function getPortfolioValues(cryptos, marketData) {
 			}
 		}
 	}
-
-	return {infoToDisplay, totalValue}
+	return { infoToDisplay, totalValue }
 }
 export default Portfolio;

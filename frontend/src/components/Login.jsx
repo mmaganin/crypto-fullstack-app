@@ -1,6 +1,5 @@
 import { Box, TextField, Button, Stack, Card } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
 import { useAuthenticate, useNavigateAccount } from "../utility/CustomHooks";
 
 const titleStyle = {
@@ -18,20 +17,21 @@ const cardStyle = {
  * @returns Sign In page (aka Login)
  */
 const Login = () => {
-    //states
+    //STATES
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [canAuthenticate, setCanAuthenticate] = useState(false);
-    //hooks
+    //HOOKS
     useNavigateAccount()
     var { isError } = useAuthenticate(username, password, canAuthenticate, true)
-    //handlers
+    //HANDLERS
     function handleUsername(e) {
         setUsername(e.target.value)
     }
     function handlePassword(e) {
         setPassword(e.target.value)
     }
+    //upon clicking submit, allows authentication to begin
     function handleSubmit() {
         setCanAuthenticate(true)
     }
