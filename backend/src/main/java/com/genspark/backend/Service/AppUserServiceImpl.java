@@ -151,11 +151,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public AppUser createUser(String username, String password) {
         Collection<AppRole> roles = new ArrayList<>();
-        AppRole userRole = new AppRole(0, "ROLE_USER");
-        for (AppRole appRole : getRoles()) {
-            if (appRole.getName().equals("ROLE_USER")) {
-                userRole = appRole;
-            }
+        AppRole userRole;
+        if((userRole = appRoleDao.findByName("ROLE_USER")) == null){
+            appRoleDao.save((userRole = new AppRole(0, "ROLE_USER")));
         }
         roles.add(userRole);
         AppUser appUser = new AppUser(0, username, password, "",
@@ -172,7 +170,6 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     @Override
     public AppUser getUser(String username) {
         log.info("Fetching user {}", username);
-        AppUser appUser = appUserDao.findByUsername(username);
         return appUserDao.findByUsername(username);
     }
 

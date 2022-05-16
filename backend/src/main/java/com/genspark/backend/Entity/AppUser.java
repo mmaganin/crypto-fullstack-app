@@ -1,8 +1,6 @@
 package com.genspark.backend.Entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import static javax.persistence.GenerationType.AUTO;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class AppUser {
     @Id
     @GeneratedValue(strategy = AUTO)

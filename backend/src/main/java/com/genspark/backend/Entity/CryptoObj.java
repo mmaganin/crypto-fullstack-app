@@ -1,9 +1,7 @@
 package com.genspark.backend.Entity;
 
 import com.genspark.backend.CryptoAPI;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,6 +14,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Table(name = "tbl_crypto_objs")
 public class CryptoObj {
     private String name;
