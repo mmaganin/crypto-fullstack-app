@@ -16,18 +16,18 @@ export function editAccount(access_token, userInfo, editType) {
 		json = JSON.stringify({
 			username: userInfo.username, password: userInfo.password, crypto_to_add: userInfo.crypto_to_add
 		})
-		fetchFrom = 'http://localhost:8080/portfolio'
+		fetchFrom = 'http://localhost:8080/api/user/portfolio'
 	} else if (editType === "account") {
 		json = JSON.stringify({
 			username: userInfo.username, password: userInfo.password, email: userInfo.email,
 			bio: userInfo.bio, name: userInfo.name, age: userInfo.age
 		})
-		fetchFrom = 'http://localhost:8080/account'
+		fetchFrom = 'http://localhost:8080/api/user/account'
 	} else {
 		return;
 	}
 	const payload = {
-		method: 'POST',
+		method: 'PUT',
 		headers: {
 			"Content-Type": "application/json",
 			"Authorization": "Bearer " + access_token
@@ -77,7 +77,7 @@ export function authLoad(username, password) {
 export function accessTokenLoad(access_token) {
 	if (access_token === "" || access_token === "must login") return null
 	var fetchLoad = {
-		fetchFrom: 'http://localhost:8080/account',
+		fetchFrom: 'http://localhost:8080/api/user/account',
 		payload: {
 			method: 'GET',
 			headers: {
@@ -96,7 +96,7 @@ export function accessTokenLoad(access_token) {
 export function fetchRefreshLoad() {
 	var refresh_token = localStorage.getItem('refresh');
 	var fetchLoad = {
-		fetchFrom: 'http://localhost:8080/tokens/refresh',
+		fetchFrom: 'http://localhost:8080/api/noroles/tokens/refresh',
 		payload: refresh_token === null ? "must login" : {
 			method: 'GET',
 			headers: {
@@ -113,14 +113,50 @@ export function fetchRefreshLoad() {
  * URI to fetch from and the REST payload
  */
 export function marketsLoad() {
-    var fetchLoad = {
-      fetchFrom: 'http://localhost:8080/markets',
-      payload: {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-    }
-    return fetchLoad;
-  }
+	var fetchLoad = {
+		fetchFrom: 'http://localhost:8080/api/noroles/markets',
+		payload: {
+			method: 'GET',
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}
+	}
+	return fetchLoad;
+}
+/**
+ * Returns the necessary REST load for refreshing market data
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, } } }} 
+ * URI to fetch from and the REST payload
+ */
+ export function refreshMarketsLoad() {
+	var fetchLoad = {
+		fetchFrom: 'http://localhost:8080/api/noroles/markets',
+		payload: {
+			method: 'PUT',
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}
+	}
+	return fetchLoad;
+}
+/**
+ * Returns the necessary REST load for create account
+ * @returns {{fetchFrom: String, payload: { method: String, headers: { String: String, }, body: String } }} 
+ * URI to fetch from and the REST payload
+ */
+export function createAccountLoad(username, password) {
+	const json = JSON.stringify({ username: username, password: password })
+	var fetchLoad = {
+		fetchFrom: 'http://localhost:8080/api/noroles/createaccount',
+		payload: {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: json
+		}
+	}
+	return fetchLoad;
+}

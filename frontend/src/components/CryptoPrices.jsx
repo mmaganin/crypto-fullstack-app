@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Box, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useGetMarkets } from "../utility/CustomHooks";
+import { refreshMarketsLoad } from "../utility/HelpfulMethods";
 
 const titleStyle = {
   fontSize: 48,
@@ -19,13 +20,8 @@ const CryptoPrices = () => {
   //HANDLERS
   //handles refreshing market data and reloading page to update on grid
   function handleRefresh() {
-    const payload = {
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json"
-      },
-    }
-    fetch('http://localhost:8080/markets', payload)
+    var fetchLoad = refreshMarketsLoad()
+    fetch(fetchLoad.fetchFrom, fetchLoad.payload)
       .then(response => {
         if (!response.ok) throw new Error(response.status);
         else return response.json();

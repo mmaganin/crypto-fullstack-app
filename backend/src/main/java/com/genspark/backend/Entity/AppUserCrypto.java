@@ -10,8 +10,12 @@ import javax.persistence.Id;
 
 import static javax.persistence.GenerationType.AUTO;
 
+/**
+ * DB Entity for storing a crypto present in a user's portfolio
+ */
 @Entity
-@Data /*getters and setters*/ @NoArgsConstructor
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class AppUserCrypto {
     @Id

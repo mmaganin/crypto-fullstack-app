@@ -1,9 +1,7 @@
 package com.genspark.backend.Security;
 
-import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,14 +16,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.genspark.backend.Security.SecurityUtil.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * Custom JWT Spring Security UsernamePasswordAuthenticationFilter
+ */
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
@@ -34,7 +33,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
     }
 
-    //permits all requests with /login path and authenticates based on params
+    /**
+     * attempts authentication with username and password from URL encoded form obtained from requests using /login URI
+     *
+     * @param request  incoming REST HTTP request
+     * @param response outgoing REST HTTP response
+     * @return Authentication object to be used in successfulAuthentication()
+     * @throws AuthenticationException
+     */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = request.getParameter("username");
@@ -46,28 +52,25 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         return authenticationManager.authenticate(authenticationToken);
     }
 
+    /**
+     * generates 200 OK REST response containing JWT access and refresh tokens upon successful authentication
+     *
+     * @param request        incoming REST HTTP request
+     * @param response       outgoing REST HTTP response
+     * @param chain          Spring Security auth filter
+     * @param authentication auth object from attemptAuthentication
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        User user = (User)authentication.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256("secretKeyExampleMustBeMoreSecureForRealApplication".getBytes());
-        String access_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                .withIssuer(request.getRequestURL().toString())
-                .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(algorithm);
-        String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 480 * 60 * 1000))
-                .withIssuer(request.getRequestURL().toString())
-                .sign(algorithm);
+        User user = (User) authentication.getPrincipal();
+        Algorithm algorithm = jwtAlgorithm;
+        String access_token = generateJWTToken(user.getUsername(), user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()), request.getRequestURL().toString(), algorithm, true);
+        String refresh_token = generateJWTToken(user.getUsername(), null, request.getRequestURL().toString(), algorithm, false);
 
-//        response.setHeader("access_token", access_token);
-//        response.setHeader("refresh_token", refresh_token);
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("access_token", access_token);
-        tokens.put("refresh_token", refresh_token);
+        Map<String, String> tokens = createTokensBody(access_token, refresh_token);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

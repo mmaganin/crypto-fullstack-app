@@ -4,7 +4,9 @@ import com.genspark.backend.Entity.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-//JpaRepository<x, y> (x=table, y=primary key) has a bunch of methods for interacting with DB
+/**
+ * DAO for storing AppUser users data in DB
+ */
 @Repository
 public interface AppUserDao extends JpaRepository<AppUser, Integer> {
     AppUser findByUsername(String username);

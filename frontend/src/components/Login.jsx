@@ -20,19 +20,23 @@ const Login = () => {
     //STATES
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordFormContent, setPasswordFormContent] = useState("");
+	const [usernameFormContent, setUsernameFormContent] = useState("");
     const [canAuthenticate, setCanAuthenticate] = useState(false);
     //HOOKS
     useNavigateAccount()
     var { isError } = useAuthenticate(username, password, canAuthenticate, true)
     //HANDLERS
     function handleUsername(e) {
-        setUsername(e.target.value)
+        setUsernameFormContent(e.target.value)
     }
     function handlePassword(e) {
-        setPassword(e.target.value)
+        setPasswordFormContent(e.target.value)
     }
     //upon clicking submit, allows authentication to begin
     function handleSubmit() {
+        setUsername(usernameFormContent)
+        setPassword(passwordFormContent)
         setCanAuthenticate(true)
     }
 

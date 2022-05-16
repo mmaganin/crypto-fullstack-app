@@ -1,4 +1,5 @@
 package com.genspark.backend.Entity;
+
 import com.genspark.backend.CryptoAPI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +9,18 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Data @NoArgsConstructor @AllArgsConstructor
-@Table(name="tbl_crypto_objs")
+/**
+ * DB Entity for storing a specific cryptocurrency's market data
+ */
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "tbl_crypto_objs")
 public class CryptoObj {
     private String name;
     private String symbol;
-    @Id
+    @Id //name of the cryptocurrency but unique
     private String slug;
     private String circulating_supply;
     private String total_supply;
@@ -26,15 +33,19 @@ public class CryptoObj {
     private String market_cap;
     private String last_updated;
 
-    public static List<CryptoObj> generateListFromApi(){
+    /**
+     * Generates a list containing CryptoObj objects of all cryptos fetched from API
+     *
+     * @return list containing CryptoObj objects
+     */
+    public static List<CryptoObj> generateListFromApi() {
         String apiCallStr = CryptoAPI.fetchMarketData();
         List<CryptoObj> cryptoObjList = new ArrayList<>();
         if (!apiCallStr.contains("\"data\"")) {
             return cryptoObjList;
         }
-
         for (String entry : apiCallStr.split("\"id\"")) {
-            if(!(entry.contains("\"slug\"") )){
+            if (!(entry.contains("\"slug\""))) {
                 continue;
             }
             cryptoObjList.add(new CryptoObj(
@@ -57,14 +68,19 @@ public class CryptoObj {
         return cryptoObjList;
     }
 
+    /**
+     * @param field      name of the CryptoObj attribute to parse for
+     * @param apiCallStr individual crypto's API call string to parse
+     * @return String data associated with the desired CryptoObj attribute
+     */
     public static String parseApiCall(String field, String apiCallStr) {
-        if(!apiCallStr.contains("\"" + field + "\"")){
+        if (!apiCallStr.contains("\"" + field + "\"")) {
             return "";
         }
         String jsonLine = apiCallStr
                 .substring(apiCallStr.indexOf("\"" + field + "\""), apiCallStr.indexOf(",", apiCallStr.indexOf("\"" + field + "\"")));
         String data = jsonLine.substring(jsonLine.indexOf(":") + 1);
-        if(data.indexOf("\"", data.indexOf(":")) != -1){
+        if (data.indexOf("\"", data.indexOf(":")) != -1) {
             data = jsonLine.substring(jsonLine.indexOf(":") + 2, jsonLine.lastIndexOf("\""));
         }
 

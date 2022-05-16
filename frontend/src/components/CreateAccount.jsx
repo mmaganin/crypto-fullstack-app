@@ -1,6 +1,8 @@
 import { Box, TextField, Button, Stack, Card } from '@mui/material';
 import React, { useState } from 'react'
 import { useNavigateAccount, useAuthenticate } from "../utility/CustomHooks";
+import { createAccountLoad } from "../utility/HelpfulMethods";
+
 
 const titleStyle = {
 	fontSize: 32,
@@ -21,6 +23,9 @@ const CreateAccount = () => {
 	//states that change when user types in forms
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [passwordFormContent, setPasswordFormContent] = useState("");
+	const [usernameFormContent, setUsernameFormContent] = useState("");
+
 	//changes when user is fetched
 	const [createdUser, setCreatedUser] = useState(null)
 	//changes when create account is clicked
@@ -31,24 +36,18 @@ const CreateAccount = () => {
 	//HANDLERS
 	//handles changing state when user types in form
 	function handleUsername(e) {
-		setUsername(e.target.value)
+		setUsernameFormContent(e.target.value)
 	}
 	function handlePassword(e) {
-		setPassword(e.target.value)
+		setPasswordFormContent(e.target.value)
 	}
 	//runs when user clicks create account 
 	//POST request, saves new account in database if username doesnt already exist
 	function handleSubmit() {
-		const json = JSON.stringify({ username: username, password: password })
-		const fetchFrom = 'http://localhost:8080/createaccount'
-		const payload = {
-			method: 'POST',
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: json
-		}
-		fetch(fetchFrom, payload)
+		setUsername(usernameFormContent)
+		setPassword(passwordFormContent)
+		var fetchLoad = createAccountLoad(usernameFormContent, passwordFormContent)
+		fetch(fetchLoad.fetchFrom, fetchLoad.payload)
 			.then(response => {
 				if (!response.ok) throw new Error(response.status);
 				else return response.json();

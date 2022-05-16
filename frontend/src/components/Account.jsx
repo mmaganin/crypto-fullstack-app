@@ -25,6 +25,8 @@ const Account = () => {
 	//STATES
 	//states that change when user types to edit the field
 	const [oldPassword, setOldPassword] = useState("");
+	const [oldPasswordFieldContent, setOldPasswordFieldContent] = useState("");
+
 	const [canAuthenticate, setCanAuthenticate] = useState(false);
 	//states that change when user types to edit the field
 	const [password, setPassword] = useState("");
@@ -45,11 +47,11 @@ const Account = () => {
 	var access_token = fetchInfo.access_token
 	//assigns state values after user fetched
 	useEffect(() => {
-		if (fetchInfo === null) return;
-		if (age === -1) setAge(fetchInfo.age);
-		if (name === "") setName(fetchInfo.name);
-		if (bio === "") setBio(fetchInfo.bio);
-		if (email === "") setEmail(fetchInfo.email);
+		if (fetchInfo === null || fetchInfo.user === null) return;
+		if (age === -1) setAge(fetchInfo.user.age);
+		if (name === "") setName(fetchInfo.user.name);
+		if (bio === "") setBio(fetchInfo.user.bio);
+		if (email === "") setEmail(fetchInfo.user.email);
 	}, [fetchInfo, age, name, bio, email]);
 	//runs after user fetched, authenticates the user
 	var { isAuthenticated } = useAuthenticate(user, oldPassword, canAuthenticate, false)
@@ -116,7 +118,7 @@ const Account = () => {
 		if (type === "password") {
 			setPassword(event.target.value)
 		} else if (type === "oldPassword") {
-			setOldPassword(event.target.value)
+			setOldPasswordFieldContent(event.target.value)
 		} else if (type === "name") {
 			setName(event.target.value)
 		} else if (type === "email") {
@@ -131,7 +133,7 @@ const Account = () => {
 	function handleClickAway() {
 		closeDisplayForms()
 		setPassword("");
-		setOldPassword("");
+		setOldPasswordFieldContent("");
 		setName(user.name)
 		setEmail(user.email)
 		setAge(user.age)
@@ -144,6 +146,7 @@ const Account = () => {
 	//handles closing edit forms and triggering authentication
 	function handleSubmit() {
 		closeDisplayForms()
+		setOldPassword(oldPasswordFieldContent)
 		authenticate()
 	}
 	/**
@@ -186,7 +189,7 @@ const Account = () => {
 		} else {
 			return (
 				<TextField
-					id="standard-helperText"
+					id="helperText"
 					label={label}
 					defaultValue={field}
 					variant="outlined"
@@ -270,7 +273,7 @@ const Account = () => {
 				{displayOldPasswordField ?
 					<Stack direction="column" justifyContent='center' alignItems="center" alignContent="center">
 						<TextField
-							id="standard-helperText"
+							id="standard"
 							label="Enter your current password."
 							defaultValue=""
 							variant="outlined"

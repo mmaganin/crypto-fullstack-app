@@ -10,7 +10,13 @@ import javax.persistence.Id;
 
 import static javax.persistence.GenerationType.AUTO;
 
-@Entity @Data /*getters and setters*/ @NoArgsConstructor @AllArgsConstructor
+/**
+ * DB Entity for storing authorization roles AppRole
+ */
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppRole {
     @Id
     @GeneratedValue(strategy = AUTO)

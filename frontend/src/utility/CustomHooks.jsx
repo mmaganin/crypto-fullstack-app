@@ -50,10 +50,6 @@ export const useFetchAccessToken = (canFetch) => {
  */
 export const useFetchUser = (canFetchUser) => {
     const [user, setUser] = useState(null);
-    const [age, setAge] = useState(-1);
-    const [name, setName] = useState("");
-    const [bio, setBio] = useState("");
-    const [email, setEmail] = useState("");
     var access_token = useFetchAccessToken(canFetchUser)
     useEffect(() => {
         if (!canFetchUser || access_token === "" || access_token === "must login") return;
@@ -67,17 +63,13 @@ export const useFetchUser = (canFetchUser) => {
             .then(user => {
                 console.log("successful user info fetch: ")
                 setUser(user)
-                setName(user.name)
-                setEmail(user.email)
-                setAge(user.age)
-                setBio(user.bio)
             })
             .catch((error) => {
                 console.log("User Fetch failed: " + error)
             })
     }, [access_token, canFetchUser]);
 
-    return { access_token, user, name, email, age, bio }
+    return { access_token, user }
 }
 /**
  * Edits a user's account once a user reauthenticates upon isAuthenticated state change to true
@@ -151,7 +143,6 @@ export const useGetMarkets = () => {
         fetch(fetchLoad.fetchFrom, fetchLoad.payload)
             .then(response => response.json())
             .then(data => setData(data))
-
     }, [data]);
 
     return data

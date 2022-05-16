@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Menu, Container, Button, Tooltip, MenuItem } from '@mui/material';
 
 const imgStyle = {
     width: '100%',
@@ -69,9 +68,12 @@ const ResponsiveAppBar = () => {
                     </Box>{/*contains navigation options left side of navbar, right side of image*/}
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Account Settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, bgcolor: 'white' }}>
-                                <AccountCircle />
-                            </IconButton>
+                            <Button
+                                onClick={handleOpenUserMenu}
+                                sx={{ width: '40px' }}
+                            >
+                                <img src="images/other/profile-icon.jpg" alt="" style={imgStyle} />
+                            </Button>
                         </Tooltip>{/*Profile IconButton that drops down menu for account settings pages*/}
                         <Menu
                             sx={{ mt: '45px' }}
