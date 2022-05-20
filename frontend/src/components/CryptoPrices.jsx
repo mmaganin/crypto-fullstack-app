@@ -35,12 +35,15 @@ const CryptoPrices = () => {
         console.log("market data refresh fetch failed: " + error)
       })
   }
+  var rowId = 0;
   //puts market data into a rows array to be mapped into the DataGrid
   const rows = data === null ? null :
-    Array.from(data.map((dataIdx) =>
-      createData(dataIdx.name, dataIdx.symbol, dataIdx.price, dataIdx.percent_change_1h,
+    Array.from(data.map((dataIdx) => {
+      rowId++;
+      return createData(dataIdx.name, dataIdx.symbol, dataIdx.price, dataIdx.percent_change_1h,
         dataIdx.percent_change_24h, dataIdx.percent_change_7d, dataIdx.percent_change_30d,
-        dataIdx.market_cap, dataIdx.circulating_supply, dataIdx.cmc_rank)))
+        dataIdx.market_cap, dataIdx.circulating_supply, rowId);
+    }))
   return (
     <Box
       sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', margin: 3 }}
@@ -51,7 +54,7 @@ const CryptoPrices = () => {
       {data === null ? "Loading Markets" :
         <Box sx={{ height: 700, width: '100%', margin: 3 }}>
           <DataGrid
-            sx={{bgcolor: 'white'}}
+            sx={{ bgcolor: 'white' }}
             rows={rows}
             columns={columns}
             pageSize={10}
@@ -59,7 +62,7 @@ const CryptoPrices = () => {
           />
         </Box> /*Table of market data with its container*/
       }
-      <Button variant="outlined" sx={{bgcolor: 'white'}} onClick={handleRefresh}>
+      <Button variant="outlined" sx={{ bgcolor: 'white' }} onClick={handleRefresh}>
         Refresh Market Data
       </Button> {/*button to fetch new market data*/}
       <Box sx={{ fontWeight: 'regular' }}>
@@ -79,7 +82,7 @@ const columns = [
   { field: 'percent_change_30d', headerName: '% Change 30D (%)', width: 175 },
   { field: 'market_cap', headerName: 'Market Cap ($)', width: 175 },
   { field: 'circulating_supply', headerName: 'Circulating Supply', width: 175 },
-  { field: 'id', headerName: 'Market Cap Rank', width: 150 },
+  { field: 'id', headerName: 'Row ID', width: 150 },
 ];
 /**
  * creates data for row in DataGrid, parses and rounds floats to be sortable in DataGrid

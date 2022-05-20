@@ -11,18 +11,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AppUserServiceTest {
@@ -32,7 +38,7 @@ class AppUserServiceTest {
     private AppRoleDao appRoleDao;
     @Mock
     private PasswordEncoder passwordEncoder;
-    private AppUserService appUserService;
+    private AppUserServiceImpl appUserService;
 
     @BeforeEach
     void setUp() {
@@ -44,16 +50,43 @@ class AppUserServiceTest {
     }
 
     @Test
+    void loadUserByUsername_UserExists() {
+        AppRole appRole = new AppRole(1, "ROLE_USER");
+        ArrayList<AppRole> roles = new ArrayList<>();
+        roles.add(appRole);
+        AppUser appUser = new AppUser(1, "testUsername", "testPassword", "testEmail",
+                "testBio", "testName", 12, new ArrayList<>(), roles);
+
+        given(appUserDao.findByUsername(anyString())).willReturn(appUser);
+        UserDetails userDetails = appUserService.loadUserByUsername("username");
+
+        assertThat(userDetails.getUsername()).isEqualTo("testUsername");
+        assertThat(userDetails.getAuthorities().size()).isEqualTo(1);
+    }
+
+    @Test
+    void loadUserByUsername_UserNotExists_WillThrowException() {
+        assertThatThrownBy(() -> appUserService.loadUserByUsername("username"))
+                .isInstanceOf(UsernameNotFoundException.class)
+                .hasMessage("User not found in the database");
+    }
+
+    @Test
     void saveUser() {
         AppUser appUser = new AppUser(1, "testUsername", "testPassword", "testEmail",
                 "testBio", "testName", 12, new ArrayList<>(), new ArrayList<>());
-
         appUserService.saveUser(appUser);
-        ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
-        verify(appUserDao).save(appUserArgumentCaptor.capture());
-        AppUser capturedUser = appUserArgumentCaptor.getValue();
 
-        assertThat(capturedUser).isEqualTo(appUser);
+        ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
+
+        verify(appUserDao).save(appUserArgumentCaptor.capture());
+        verify(passwordEncoder).encode(passwordCaptor.capture());
+        AppUser capturedUser = appUserArgumentCaptor.getValue();
+        String capturedPassword = passwordCaptor.getValue();
+
+        assertThat(capturedPassword).isEqualTo("testPassword");
+        assertThat(capturedUser.toString()).isEqualTo(appUser.toString());
     }
 
     @Test
@@ -93,34 +126,73 @@ class AppUserServiceTest {
 
     @Test
     void addRoleToUser() {
+        AppRole appRole = new AppRole(1, "ROLE_USER");
+        AppUser appUser = new AppUser(1, "testUsername", "testPassword", "testEmail",
+                "testBio", "testName", 12, new ArrayList<>(), new ArrayList<>());
+        given(appUserDao.findByUsername(anyString())).willReturn(appUser);
+        given(appRoleDao.findByName(anyString())).willReturn(appRole);
+
+        appUserService.addRoleToUser("testUsername", "ROLE_USER");
+
+        assertThat(appUser.getRoles().contains(appRole)).isTrue();
     }
 
     @Test
-    void editPortfolio() {
+    void editPortfolio_addNewCrypto() {
+        AppUserCrypto appUserCrypto = new AppUserCrypto(0, "test", 1);
+        ArrayList<AppUserCrypto> existingCryptos = new ArrayList<>();
+        existingCryptos.add(appUserCrypto);
+
+        AppUser appUser = new AppUser(1, "testUsername", "testPassword", "testEmail",
+                "testBio", "testName", 12, existingCryptos, new ArrayList<>());
+        given(appUserDao.findByUsername(anyString())).willReturn(appUser);
+        AppUserCrypto expected = new AppUserCrypto(1, "test1", 1);
+        appUserService.editPortfolio("testUsername", "testPassword", expected);
+
+        ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
+        verify(appUserDao).save(appUserArgumentCaptor.capture());
+        AppUser capturedUser = appUserArgumentCaptor.getValue();
+        assertThat(capturedUser.getCrypto_in_portfolio().contains(expected)).isEqualTo(true);
     }
 
     @Test
-    void createUser_UserRoleDoesNotExist_ShouldCreateUserRole() {
-        appUserService.createUser("testUser", "testPass");
+    void editPortfolio_modifyExistingCrypto() {
+        AppUserCrypto appUserCrypto = new AppUserCrypto(0, "test", 1);
+        ArrayList<AppUserCrypto> existingCryptos = new ArrayList<>();
+        existingCryptos.add(appUserCrypto);
 
+        AppUser appUser = new AppUser(1, "testUsername", "testPassword", "testEmail",
+                "testBio", "testName", 12, existingCryptos, new ArrayList<>());
+        given(appUserDao.findByUsername(anyString())).willReturn(appUser);
+        AppUser expected = appUserService.editPortfolio("testUsername", "testPassword", new AppUserCrypto(0, "test", -3));
 
-//        given(appRoleDao.findByName(anyString())).willReturn(null);
-
-        ArgumentCaptor<AppRole> appUserArgumentCaptor = ArgumentCaptor.forClass(AppRole.class);
-        verify(appRoleDao).save(appUserArgumentCaptor.capture());
-        AppRole capturedRole = appUserArgumentCaptor.getValue();
-
-        assertThat(capturedRole.toString()).isEqualTo((new AppRole(0, "ROLE_USER")).toString());
-
+        ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
+        verify(appUserDao).save(appUserArgumentCaptor.capture());
+        AppUser capturedUser = appUserArgumentCaptor.getValue();
+        assertThat(capturedUser.getCrypto_in_portfolio().contains(appUserCrypto) && appUserCrypto.getQuantity() == 0).isEqualTo(true);
     }
 
     @Test
     void createUser() {
         appUserService.createUser("testUser", "testPass");
-        //given(appRoleDao.findByName(anyString())).willReturn(new AppRole(0, "ROLE_USER"));
 
+        ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
+        ArgumentCaptor<AppRole> appRoleArgumentCaptor = ArgumentCaptor.forClass(AppRole.class);
 
+        verify(appRoleDao).save(appRoleArgumentCaptor.capture());
+        verify(appUserDao).save(appUserArgumentCaptor.capture());
+        verify(passwordEncoder).encode(passwordCaptor.capture());
+
+        AppUser capturedUser = appUserArgumentCaptor.getValue();
+        String capturedPassword = passwordCaptor.getValue();
+        AppRole capturedRole = appRoleArgumentCaptor.getValue();
+
+        assertThat(capturedRole.toString()).isEqualTo((new AppRole(0, "ROLE_USER")).toString());
+        assertThat(capturedPassword).isEqualTo("testPass");
+        assertThat(capturedUser.getUsername()).isEqualTo("testUser");
     }
+
 
 
 }

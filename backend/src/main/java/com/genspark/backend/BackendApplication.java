@@ -26,4 +26,9 @@ public class BackendApplication {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    CryptoAPI cryptoAPI() {
+        return new CryptoAPI();
+    }
 }

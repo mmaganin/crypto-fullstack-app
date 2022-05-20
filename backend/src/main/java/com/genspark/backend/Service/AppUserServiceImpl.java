@@ -34,6 +34,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * Custom UserDetailsService config method for loading a user from DB by username and adding proper authorities
+     *
      * @param username user's username
      * @return Spring Security object containing user's details
      * @throws UsernameNotFoundException
@@ -57,6 +58,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * saves new user to database
+     *
      * @param appUser user account
      * @return new AppUser user
      */
@@ -69,6 +71,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * saves new role to DB
+     *
      * @param role user's auth role
      * @return new AppRole auth role
      */
@@ -80,6 +83,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * gets all roles present in DB
+     *
      * @return list of AppRole auth roles
      */
     @Override
@@ -90,6 +94,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * adds auth role to user
+     *
      * @param username user's username
      * @param roleName role to add to user
      */
@@ -103,8 +108,9 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * edits a user's portfolio after buy or sell
-     * @param username user's username
-     * @param password user's password
+     *
+     * @param username       user's username
+     * @param password       user's password
      * @param newCryptoToAdd crypto to buy or sell
      * @return AppUser with altered crypto_in_portfolio portfolio
      */
@@ -144,6 +150,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * creates a new user with ROLE_USER role
+     *
      * @param username user's username
      * @param password user's password
      * @return new AppUser user with default ROLE_USER role
@@ -152,7 +159,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
     public AppUser createUser(String username, String password) {
         Collection<AppRole> roles = new ArrayList<>();
         AppRole userRole;
-        if((userRole = appRoleDao.findByName("ROLE_USER")) == null){
+        if ((userRole = appRoleDao.findByName("ROLE_USER")) == null) {
             appRoleDao.save((userRole = new AppRole(0, "ROLE_USER")));
         }
         roles.add(userRole);
@@ -164,6 +171,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * gets User from DB by username
+     *
      * @param username user's username
      * @return AppUser user
      */
@@ -175,6 +183,7 @@ public class AppUserServiceImpl implements AppUserService, UserDetailsService {
 
     /**
      * gets all users from DB
+     *
      * @return list of AppUser users
      */
     @Override
